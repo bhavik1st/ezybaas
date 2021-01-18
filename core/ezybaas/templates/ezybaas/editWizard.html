@@ -1,0 +1,1549 @@
+{% extends "ezybaas/layout.html" %}
+{% block styles %}
+{{ block.super }}
+<style>
+   .fa-database {
+   color: #633991
+   }
+   .fa-check-circle {
+   color: limegreen
+   }
+</style>
+{% endblock styles %}
+{% block head %}
+{{ block.super }}
+{% endblock head %}
+{% block topbarheader %}
+<span class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block">
+<a class="h4 mb-0 text-white d-none d-lg-inline-block" href="{% url 'index' %}">Home</a>&nbsp;>&nbsp;Edit App
+</span>
+{% endblock %}
+{% block bodycontent %}
+<div id="vapp" class="container-fluid mt--8">
+   <div class="modal fade" id="fieldModal" tabindex="-1" role="dialog" aria-labelledby="fieldModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="fieldModalLabel">Field Settings</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="nav-item">
+                     <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                        aria-selected="true">Basic</a>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link" id="limits-tab" data-toggle="tab" href="#limits" role="tab" aria-controls="limits"
+                        aria-selected="false">Advanced</a>
+                  </li>
+               </ul>
+               <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-6">
+                           <div class="form-group focused">
+                              <label class="form-control-label" for="input-name">Name</label>
+                              <input v-model="field.name" type="text" id="input-name"
+                                 class="form-control form-control-alternative" placeholder="Field Name">
+                           </div>
+                        </div>
+                        <div class="col-lg-6">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-email">Type</label>
+                              <select @change="showFK" v-model="field.type" class="form-control" id="exampleFormControlSelect1">
+                                 <option value="Text">Text</option>
+                                 <option value="Number">Number</option>
+                                 <option value="Date">Date</option>
+                                 <option value="Bool">Bool</option>
+                                 <option value="ForeignKey">ForeignKey</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-lg-3">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input @change="showPrimary" v-model="field.pk" class="custom-control-input" id="customCheck4"
+                                    type="checkbox">
+                                 <label class="custom-control-label" for="customCheck4">Primary</label>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div v-if="displayFK === true" class="row">
+                        <div class="col-lg-6">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-foreignkey_table">Foreign Key Table</label>
+                              <select v-model="field.fk" class="form-control" id="exampleFormControlSelect1">
+                                 <option v-for="table in erd.tables">{[{ table }]}</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div class="col-lg-6">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-on_delete">On Delete</label>
+                              <select v-model="field.onDelete" class="form-control" id="exampleFormControlSelect2">
+                                 <option >CASCADE</option>
+                                 <option>PROTECT</option>
+                                 <option>SET_NULL</option>
+                                 <option>SET_DEFAULT</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="keys" role="tabpanel" aria-labelledby="keys-tab">
+                     <br>
+                  </div>
+                  <div class="tab-pane fade" id="limits" role="tabpanel" aria-labelledby="limits-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <label class="form-control-label" for="input-name">Default</label>
+                              <input v-model="field.defaultValue" type="text" id="input-name"
+                                 class="form-control form-control-alternative" placeholder="Default">
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-country">Min</label>
+                              <input v-model="field.min" value="0" type="number" id="input-min"
+                                 class="form-control form-control-alternative" placeholder="Minimum">
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-country">Max</label>
+                              <input v-model="field.max" value="255" type="number" id="input-max"
+                                 class="form-control form-control-alternative" placeholder="Maximum">
+                           </div>
+                        </div>
+                     </div>
+                     <div v-if="isPrimary === false" class="row">
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input class="custom-control-input" id="customCheck5" type="checkbox">
+                                 <label class="custom-control-label" for="customCheck5">Unique</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input class="custom-control-input" id="customCheck6" type="checkbox" checked>
+                                 <label class="custom-control-label" for="customCheck6">Nullable</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.blankable" class="custom-control-input" id="customCheck7" type="checkbox"
+                                    checked>
+                                 <label class="custom-control-label" for="customCheck7">Blank</label>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div v-else class="row">
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.unique" class="custom-control-input" id="customCheck5" type="checkbox"
+                                    disabled>
+                                 <label class="custom-control-label" for="customCheck5">Unique</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.nullable" class="custom-control-input" id="customCheck6" type="checkbox"
+                                    checked disabled>
+                                 <label class="custom-control-label" for="customCheck6">Nullable</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.blankable" class="custom-control-input" id="customCheck7" type="checkbox"
+                                    checked disabled>
+                                 <label class="custom-control-label" for="customCheck7">Blank</label>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" @click="insertField(erd.tables[activeTix],field)" class="btn btn-primary"
+                  data-dismiss="modal">Save changes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal fade" id="tableModal" tabindex="-1" role="dialog" aria-labelledby="tableModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="fieldModalLabel">Table Settings</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <div class="row">
+                  <div class="col-lg-12">
+                     <div class="form-group focused">
+                        <label class="form-control-label" for="input-name">Name</label>
+                        <input v-model="myTable" type="text" id="input-name" class="form-control form-control-alternative"
+                           placeholder="Table Name">
+                     </div>
+                  </div>
+                  <div class="col-lg-6" style="display:none">
+                     <div class="form-group">
+                        <label class="form-control-label" for="input-email">Type</label>
+                        <select v-model="field.type" class="form-control" id="exampleFormControlSelect1">
+                           <option value="Text">Text</option>
+                           <option value="Number">Number</option>
+                           <option value="Date">Date</option>
+                           <option value="Bool">Bool</option>
+                           <option value="ForeignKey">ForeignKey</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-lg-3" style="display:none;">
+                     <div class="form-group focused">
+                        <div class="custom-control custom-checkbox mb-3">
+                           <input v-model="field.pk" class="custom-control-input" id="customCheck4" type="checkbox">
+                           <label class="custom-control-label" for="customCheck4">Primary</label>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" @click="addTable(myTable)" class="btn btn-primary" data-dismiss="modal">Save
+               changes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal fade" id="fieldEditModal" tabindex="-1" role="dialog" aria-labelledby="fieldeditModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="fieldEditModalLabel">Field Settings</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body">
+               <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="nav-item">
+                     <a class="nav-link active" id="basic-edit-tab" data-toggle="tab" href="#basic-edit" role="tab"
+                        aria-controls="basic-edit" aria-selected="true">Basic</a>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link" id="advanced-edit-tab" data-toggle="tab" href="#advanced-edit" role="tab"
+                        aria-controls="advanced-edit" aria-selected="false">Advanced</a>
+                  </li>
+               </ul>
+               <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="basic-edit" role="tabpanel" aria-labelledby="basic-edit-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-6">
+                           <div class="form-group focused">
+                              <label class="form-control-label" for="input-name">Name</label>
+                              <input v-model="field.name" type="text" id="input-name"
+                                 class="form-control form-control-alternative" placeholder="Field Name">
+                           </div>
+                        </div>
+                        <div class="col-lg-6">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-email">Type</label>
+                              <select @change="showFK" v-model="field.type" class="form-control" id="exampleFormControlSelect1">
+                                 <option value="Text">Text</option>
+                                 <option value="Number">Number</option>
+                                 <option value="Date">Date</option>
+                                 <option value="Bool">Bool</option>
+                                 <option value="ForeignKey">ForeignKey</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-lg-3">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input @change="showPrimary" v-model="field.pk" class="custom-control-input" id="customCheck4"
+                                    type="checkbox">
+                                 <label class="custom-control-label" for="customCheck4">Primary</label>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div v-if="displayFK === true" class="row">
+                        <div class="col-lg-6">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-foreignkey_table">Foreign Key Table</label>
+                              <select v-model="field.fk" class="form-control" id="exampleFormControlSelect1">
+                                 <option>Tables</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div class="col-lg-6">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-on_delete">On Delete</label>
+                              <select v-model="field.onDelete" class="form-control" id="exampleFormControlSelect2">
+                                 <option>CASCADE</option>
+                                 <option>PROTECT</option>
+                                 <option>SET_NULL</option>
+                                 <option>SET_DEFAULT</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="advanced-edit" role="tabpanel" aria-labelledby="advanced-edit-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <label class="form-control-label" for="input-name">Default</label>
+                              <input v-model="field.defaultValue" type="text" id="input-name"
+                                 class="form-control form-control-alternative" placeholder="Default">
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-country">Min</label>
+                              <input v-model="field.min" value="0" type="number" id="input-min"
+                                 class="form-control form-control-alternative" placeholder="Minimum">
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group">
+                              <label class="form-control-label" for="input-country">Max</label>
+                              <input v-model="field.max" value="255" type="number" id="input-max"
+                                 class="form-control form-control-alternative" placeholder="Maximum">
+                           </div>
+                        </div>
+                     </div>
+                     <div v-if="isPrimary === false" class="row">
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input class="custom-control-input" id="customCheck5" type="checkbox">
+                                 <label class="custom-control-label" for="customCheck5">Unique</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input class="custom-control-input" id="customCheck6" type="checkbox" checked>
+                                 <label class="custom-control-label" for="customCheck6">Nullable</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.blankable" class="custom-control-input" id="customCheck7" type="checkbox"
+                                    checked>
+                                 <label class="custom-control-label" for="customCheck7">Blank</label>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div v-else class="row">
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.unique" class="custom-control-input" id="customCheck5" type="checkbox"
+                                    disabled>
+                                 <label class="custom-control-label" for="customCheck5">Unique</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.nullable" class="custom-control-input" id="customCheck6" type="checkbox"
+                                    checked disabled>
+                                 <label class="custom-control-label" for="customCheck6">Nullable</label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4">
+                           <div class="form-group focused">
+                              <div class="custom-control custom-checkbox mb-3">
+                                 <input v-model="field.blankable" class="custom-control-input" id="customCheck7" type="checkbox"
+                                    checked disabled>
+                                 <label class="custom-control-label" for="customCheck7">Blank</label>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" @click="editField(erd.tables[activeTix],field)" class="btn btn-primary"
+                  data-dismiss="modal">Save changes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal fade" id="tableEditModal" tabindex="-1" role="dialog" aria-labelledby="tableModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="fieldModalLabel">Table Settings</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <div class="row">
+                  <div class="col-lg-12">
+                     <div class="form-group focused">
+                        <label class="form-control-label" for="input-name">Name</label>
+                        <input v-model="myTable" type="text" id="input-name" class="form-control form-control-alternative"
+                           placeholder="Table Name">
+                     </div>
+                  </div>
+                  <div class="col-lg-6" style="display:none">
+                     <div class="form-group">
+                        <label class="form-control-label" for="input-email">Type</label>
+                        <select v-model="field.type" class="form-control" id="exampleFormControlSelect1">
+                           <option value="Text">Text</option>
+                           <option value="Number">Number</option>
+                           <option value="Date">Date</option>
+                           <option value="Bool">Bool</option>
+                           <option value="ForeignKey">ForeignKey</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-lg-3" style="display:none;">
+                     <div class="form-group focused">
+                        <div class="custom-control custom-checkbox mb-3">
+                           <input v-model="field.pk" class="custom-control-input" id="customCheck4" type="checkbox">
+                           <label class="custom-control-label" for="customCheck4">Primary</label>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="button" @click="editTable(erd.tables[activeTix])" class="btn btn-primary"
+                  data-dismiss="modal">Save
+               changes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="successModalLabel"><i class="fas fa-check-circle"></i>&nbsp;App Creation
+                  Successful
+               </h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <div class="row">
+                  <div class="col">
+                     Do you want to take the App and its API live?
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               {% comment %} <a :href="'{% url 'database' %}?app=' + erd.app.name + '&table=' + erd.tables[0]"><button type="button"
+                  class="btn btn btn-gradient-secondary">No, I'll do it later</button></a> {% endcomment %}
+
+          <a :href="'{% url 'index' %}'" ><button type="button" class="btn btn btn-gradient-secondary"> No, I'll do it later </button></a>
+
+
+               {% comment %} <a :href="'{% url 'save_to_file' %}'"><button type="button" class="btn btn-primary"> Go
+               live </button></a> {% endcomment %}
+
+          <button onclick="location.href = '{% url 'index' %}'" id="saveBtn"
+           class="btn btn-primary" >Go Live</button>
+
+            </div>
+         </div>
+      </div>
+   </div>
+   <!-- Main Wizard -->
+   <div class="card shadow bg-secondary">
+      <form-wizard @on-complete="onComplete" color="#633991">
+         <h2 slot="title">
+            <div class="card-header bg-transparent pb-4">Edit App</div>
+         </h2>
+         <tab-content title="App" icon="fas fa-window-maximize" :before-change="beforeTabSwitch1">
+            <div class="pl-lg-4 ">
+               <form class="needs-validation" novalidate>
+                  <div class="form-row">
+                     <div class="col-lg-6">
+                        <label class="form-control-label" for="input-appname">App Name*</label>
+                        <div class="form-group focused" v-bind:class="{'has-danger': !isValid.appName}">
+                           <input id="appName" v-model="erd.app.name" type="text" id="input-name"
+                              class="form-control form-control-alternative" placeholder="App Name" required>
+                        </div>
+                     </div>
+                     <div class="col-lg-6">
+                        <div class="form-group">
+                           <label class="form-control-label" for="input-apptype">API Authentication*</label>
+                           <select id="AppAuth" v-model="erd.app.auth" class="form-control" id="exampleFormControlSelect1">
+                              <option value="NONE">No Authentication</option>
+                              <option value="BASIC">Basic Authentication</option>
+                              <option value="SESSION">Session Authentication</option>
+                              <option value="TOKEN">Token Authentication</option>
+                              <option value="SOCIAL" disabled>Social Authentication</option>
+                           </select>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-lg-12">
+                        <div class="form-group focused">
+                           <label class="form-control-label" for="input-name">App Description</label>
+                           <textarea id="AppDescription" v-model="erd.app.description"
+                              class="form-control form-control-alternative" id="exampleFormControlTextarea1" rows="3"
+                              placeholder="App Description (optional)">
+                           </textarea>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-lg-4">
+                        <div class="custom-control custom-checkbox mb-3">
+                           <input class="custom-control-input" id="customCheck4" type="checkbox" checked disabled>
+                           <label class="custom-control-label" for="customCheck4">RESTful APIs</label>
+                        </div>
+                     </div>
+                     <div class="col-lg-4">
+                        <div class="custom-control custom-checkbox mb-3">
+                           <input class="custom-control-input" id="customCheck4" type="checkbox" disabled>
+                           <label class="custom-control-label" for="customCheck4">GraphQL APIs</label>
+                        </div>
+                     </div>
+                     <div class="col-lg-4">
+                        <div class="custom-control custom-checkbox mb-3">
+                           <input class="custom-control-input" id="customCheck4" type="checkbox" disabled>
+                           <label class="custom-control-label" for="customCheck4">Audit Logs</label>
+                        </div>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </tab-content>
+
+
+         <tab-content title="DB Schema" icon="fas fa-database" :before-change="beforeTabSwitch2">
+            <div class="pl-lg-4">
+               <div v-if="!isValid.tableName" class="container">
+                  <div class="alert alert-warning " role="alert">
+                     <strong>Error!</strong> Please add atleast one table
+                  </div>
+               </div>
+               <div v-if="!isValid.fieldName" class="container">
+                  <div class="alert alert-warning" role="alert">
+                     <strong>Error!</strong> Please add atleast one field, Table cannot exist without a field
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-lg-6">
+                     <div class="row">
+                        <div class="col">
+                           <h6 class="heading-small text-muted mb-4"><i class="fas fa-table"></i>&nbsp; Tables</h6>
+                        </div>
+                        <div class="col">
+                           <button class="btn btn-icon btn-2 btn-outline-primary" style="float: right;" type="button"
+                              data-toggle="modal" data-target="#tableModal">
+                           <span class="btn-inner--icon"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Table</span>
+                           </button>
+                        </div>
+                     </div>
+                     <div class="accordion " id="accordionExample">
+                        <div v-for="(currentTable,idx) in erd.tables" class="card">
+                           <div class="card-header bg-transparent" id="headingOne" data-toggle="collapse"
+                              :data-target="'#' + currentTable">
+                              <h2 class="mb-0">
+                                 <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    :data-target="'#' + currentTable" aria-expanded="true" aria-controls="collapseOne">
+                                 <i class="fas fa-table"></i>&nbsp; {[{ currentTable }]}
+                                 </button>
+                                 <span class="" style="float: right;">
+                                    <div class="dropdown">
+                                       <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                       Modify
+                                       </button>
+                                       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                          <a class="dropdown-item" data-toggle="modal" data-target="#fieldModal"
+                                             @click=updateActiveTixFix(idx,-1)>Add Field</a>
+
+                                          <a class="dropdown-item" @click="deleteTable(idx, currentTable)">Delete Table</a>
+                                       </div>
+                                    </div>
+                                 </span>
+                              </h2>
+                           </div>
+                           <div :id="currentTable" class="collapse show" aria-labelledby="headingOne"
+                              data-parent="#accordionExample">
+                              <div class="card-body">
+                                 <div class="">
+                                    <draggable tag="ul" :list="erd.fields[currentTable]" class="list-group" handle=".handle">
+                                       <li class="list-group-item bg-gradient-secondary"
+                                          v-for="(element,idx2) in erd.fields[currentTable]" :key="element.name">
+                                          <div class="row ">
+                                             <div class="col">
+                                                <i v-if="element.pk === true" class="ni ni-key-25 handle">&nbsp;</i>
+                                                <i v-else class="fa fa-file handle">&nbsp;</i>
+                                                <span class="text">{[{ element.name }]} </span>
+                                             </div>
+                                             <div class="col">
+                                                <span class="badge badge-pill badge-primary">{[{ element.type }]}</span>
+                                             </div>
+                                             <div class="col text-right">
+                                                <a class="btn btn-sm btn-icon-only" role="button" data-toggle="modal"
+                                                   @click=updateActiveTixFix(idx,idx2) data-target="#fieldEditModal" aria-haspopup="true"
+                                                   aria-expanded="false">
+                                                <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                                <a class="btn btn-sm btn-icon-only" @click="deleteField(currentTable,idx2)"
+                                                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-trash"></i>
+                                                </a>
+                                             </div>
+                                          </div>
+                                       </li>
+                                    </draggable>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-6" style="overflow:auto;">
+                        <h6 class="heading-small text-muted mb-4"><i class="fas fa-table"></i>&nbsp;Visual Schema</h6>
+                        <div style="border: 1px solid blue;overflow:inherit;">
+                           <canvas id="erd-canvas">ERD Canvas</canvas>
+                        </div>
+                  </div>
+               </div>
+            </div>
+         </tab-content>
+
+         <tab-content title="API" icon="fas fa-database" :before-change="beforeTabSwitch2">
+            <div class="container">
+               <div class="col-xl-12 mb-5 mb-xl-0">
+                  <div class="card shadow">
+
+
+               <div class="card-header border-0">
+                     <div v-if= "tabledrp">
+                        <div style="float: left;">
+                           <h3 class="mb-0"><i class="fas fa-table"> </i>&nbsp; {[{tabledrp}]}</h3>
+                        </div>
+                        <div style="float: right;">
+                           <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                 {[{tabledrp}]}
+                                 <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                 <li class="dropdown-item" v-for="tbl in erd.tables" v-on:click="selectedvalue(tbl)">&nbsp; {[{ tbl }]}</li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                     <div v-else>
+                     <div style="float: left;">
+                           <h3 class="mb-0"><i class="fas fa-table"> </i>&nbsp; {[{erd.tables[0]}]}</h3>
+                        </div>
+                        <div style="float: right;">
+                           <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                 {[{erd.tables[0]}]}
+                                 <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                              <span>
+                                 <li class="dropdown-item" v-for="tbl in erd.tables" v-on:click="selectedvalue(tbl)">&nbsp;{[{ tbl }]}</li>
+                                 </span>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+               </div>
+
+
+
+
+                     <div v-if= "tabledrp">
+                        <div class="table-responsive">
+                           <table class="table align-items-center table-flush">
+                              <thead class="thead-light">
+                                 <tr>
+                                    <th scope="col">Field</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Minimum</th>
+                                    <th scope="col">Maximum</th>
+                                    <th scope="col">Unique</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr v-for="(element,idx2) in erd.fields[tabledrp]" >
+                                    <td>
+                                       {[{ element.name }]}
+                                    </td>
+                                    <td>
+                                       {[{ element.type }]}
+                                    </td>
+                                    <td>
+                                       {[{ element.max }]}
+                                    </td>
+                                    <td> 
+                                       {[{ element.min }]}
+                                    </td>
+                                    <td>
+                                       {[{ element.unique }]}
+                                    </td>
+                                    
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                     <div v-else>
+                        <div class="table-responsive">
+                           <table class="table align-items-center table-flush">
+                              <thead class="thead-light">
+                                 <tr>
+                                    <th scope="col">Field</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Minimum</th>
+                                    <th scope="col">Maximum</th>
+                                    <th scope="col">Unique</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr v-for="(element,idx2) in erd.fields[erd.tables[0]]" >
+                                    <td>
+                                       {[{ element.name }]}
+                                    </td>
+                                    <td>
+                                       {[{ element.type }]}
+                                    </td>
+                                    <td>
+                                       {[{ element.max }]}
+                                    </td>
+                                    <td> 
+                                       {[{ element.min }]}
+                                    </td>
+                                    <td>
+                                       {[{ element.unique }]}
+                                    </td>
+                                    
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </tab-content>
+      </form-wizard>
+               <div class="alert alert-success" role="alert" id="success_div_for_api" style="display:none;width=50%;">
+               <strong>Success</strong> {{ app.name }} api added successfully.!
+         </div>
+         <div class="alert alert-warning" role="alert" id="error_div_for_api" style="display:none;width=50%;">
+               <strong>Error</strong> Sorry! Something went wrong.!
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block footscripts %}
+{{ block.super }}
+<script>
+
+
+   Vue.use('VueFormWizard');
+   Vue.use('vuedraggable');
+   
+   Vue.config.devtools = true;
+   const vueApp = new Vue({
+     el: '#vapp',
+     data: {
+       tableName: '',
+       fieldName: '',
+       fieldType: '',
+       relatedTable: '',
+       errorGenerated: null,
+       message: '[nomnoml] is -> [awesome]',
+       myTable: '',
+       displayFK: false,
+       isPrimary: false,
+       isValid: {
+         appName: true,
+         appDescription: true,
+         tableName: true,
+         fieldName: true
+       },
+       field: {
+         table: '',
+         name: '',
+         type: 'Text',
+         related: '',
+         nullable: true,
+         blankable: true,
+         defaultValue: null,
+         min: 0,
+         max: 255,
+         unique: false,
+         pk: false,
+         fk: null,
+         onDelete: 'No Foreign Key'
+       },
+       tabledrp: '',
+       activeTix: 0,
+       activeFix: -1,
+       db: {
+         app: null,
+         tables: [],
+         fields: []
+       },
+       erd: {
+         app: {
+           name: '',
+           auth: 'NONE',
+           description: ''
+         },
+         tables: [],
+         fields: {}
+   
+       },
+       diagram: '[NO TABLES]',
+     },
+     watch: {
+       diagram: function () {
+         this.draw(null);
+       },
+   
+     },
+     created: function () {
+       this.draw(null)
+       this.getApps();
+       this.getTables();
+       this.getFields();
+     },
+   
+     methods: {
+       add: function () {
+         this.mytable.push({ name: "Juan ", price: "" });
+       },
+       removeField(idx) {
+         this.mytable.splice(idx, 1);
+       },
+
+
+
+      selectedvalue: function (tblname) {
+          this.tabledrp = tblname;
+            },
+            
+       updateDiagram: function () {
+         console.log('erd changes');
+         var diagram = '';
+         for (const table of this.erd.tables) {
+           var related = [];
+           diagram += '[' + table;
+           if (this.erd.fields[table]) {
+             for (var key in this.erd.fields[table]) {
+               diagram += '|' + this.erd.fields[table][key].name + ':' + this.erd.fields[table][key].type;
+               if (this.erd.fields[table][key].pk && this.erd.fields[table][key].pk != null &&
+                 this.erd.fields[table][key].pk != '')
+                 diagram += '*'
+   
+               if (this.erd.fields[table][key].related && this.erd.fields[table][key].related !=
+                 null &&
+                 this.erd.fields[table][key].related != '')
+                 related.push(this.erd.fields[table][key].related);
+             }
+           }
+           diagram += ']\n';
+   
+           for (const rtable of related) {
+             diagram += '[' + table + ']->' + '[' + rtable + ']\n';
+           }
+         }
+         this.diagram = diagram;
+         return diagram;
+       },
+       drawDiagram(canvasId, diagram) {
+         var canvas = document.getElementById(canvasId);
+         var source = diagram;
+         nomnoml.draw(canvas, source);
+       },
+       draw(canvasId) {
+         var diagramData = this.diagram;
+   
+         if (!canvasId || canvasId == null || canvasId === undefined)
+           canvasId = 'erd-canvas';
+   
+         if (diagramData == '')
+           diagramData = '[NO TABLES]';
+   
+         this.drawDiagram(canvasId, diagramData);
+       },
+       updateActiveTixFix(Tix, Fix) {
+         this.activeTix = Tix;
+         this.activeFix = Fix;
+   
+         var defaultField = {
+           table: 'abc',
+           name: '',
+           type: 'Number',
+           related: '',
+           nullable: true,
+           blankable: true,
+           defaultValue: null,
+           min: 0,
+           max: 255,
+           unique: false,
+           pk: false,
+           fk: null,
+           onDelete: 'No Foreign Key'
+         };
+   
+         if (this.activeFix == -1) {
+           this.field = defaultField;
+         }
+         else {
+         }
+       },
+       addTable(tableName) {
+         this.myTable = '';
+         if (!this.erd.fields[tableName])
+           this.erd.fields[tableName] = [];
+         this.erd.tables.push(tableName);
+         this.updateAll();
+       },
+       editTable(oldTableName) {
+         console.log(oldTableName);
+         if (!this.erd.fields[oldTableName]) {
+   
+         }
+   
+   
+         for (field in this.erd.fields[oldTableName]) {
+           console.log(field);
+           field.table = this.myTable;
+         }
+         this.erd.fields[this.myTable] = this.erd.fields[oldTableName];
+   
+         this.erd.tables[this.activeTix] = this.myTable;
+         delete this.erd.fields[oldTableName];
+   
+         this.updateAll();
+       },
+       deleteTable(tableIdx,currentTable) {
+         if (tableIdx > -1) {
+           delete this.erd.fields[this.erd.tables[tableIdx]];
+           this.erd.tables.splice(tableIdx, 1);
+           //this.DeleteTableFromDb(this.erd.app.name, currentTable);
+           //console.log('......................',this.erd.app.name, currentTable);
+         }
+         this.updateAll();
+       },
+
+
+       deleteField(currentTable, fieldIdx) {
+         console.log('.....',this.erd.fields[currentTable][fieldIdx]);
+         this.erd.fields[currentTable].splice(fieldIdx, 1);
+         this.updateAll();
+       },
+
+
+
+      /* insertDBField(table, field) {
+         //convert db field object to ui field  object
+   
+         var uiField = {
+           table: table,
+           name: field.name,
+           type: field.type,
+           related: field.fk,
+           nullable: field.nullable,
+           blankable: field.blankable,
+           defaultValue: field.defaultValue,
+           min: field.min,
+           max: field.max,
+           unique: field.unique,
+           pk: (field.id? field.id : field.pk),
+           fk: field.fk,
+           onDelete: field.onDelete
+         };
+   
+         insertField(table, uiField)
+       },*/
+       insertField(table, field) {
+         this.displayFK = false;
+         var defaultField = {
+           table: table,
+           name: field.name,
+           type: field.type,
+           related: field.foreignkeytable,
+           nullable: field.null,
+           blankable: field.blank,
+           defaultValue: field.default,
+           min: field.min,
+           max: field.max,
+           unique: field.unique,
+           pk: field.id,
+           fk: field.fk,
+           onDelete: field.onDelete
+         };
+   
+         if (!this.erd.fields[defaultField.table])
+           this.erd.fields[defaultField.table] = [];
+   
+         this.erd.fields[defaultField.table].push(defaultField);
+         this.updateAll();
+       },
+       editField(table, field) {
+         var defaultField = {
+           table: table,
+           name: field.name,
+           type: field.type,
+           related: field.fk,
+           nullable: field.nullable,
+           blankable: field.blankable,
+           defaultValue: field.defaultValue,
+           min: field.min,
+           max: field.max,
+           unique: field.unique,
+           pk: field.pk,
+           fk: field.fk,
+           onDelete: field.onDelete
+         };
+   
+         if (!this.erd.fields[defaultField.table]) {
+   
+         }
+         console.log(this.erd.fields[defaultField.table][this.activeFix]);
+         this.erd.fields[defaultField.table][this.activeFix] = defaultField;
+         console.log(this.erd.fields[defaultField.table][this.activeFix]);
+         this.updateDiagram();
+         this.updateAll();
+       },
+       addField(tableName, pk, fk, fieldName, type, relatedTable, nullable = false, blankable = true, defaultValue = '', min = 0, max = 255, unique = true, onDelete = '') {
+         var field = {
+           // TODO: Remove
+           table: tableName,
+           name: fieldName,
+           type: type,
+           related: fk,
+           nullable: nullable,
+           blankable: blankable,
+           defaultValue: defaultValue,
+           min: min,
+           max: max,
+           unique: unique,
+           pk: pk,
+           fk: fk,
+           onDelete: onDelete
+         };
+         insertField(tableName, field);
+   
+       },
+       updateAll() {
+         this.updateDiagram();
+         this.$forceUpdate();
+       },
+       showFK(e) {
+         console.log(e.target.options.selectedIndex);
+         if (e.target.options.selectedIndex === 4) {
+           this.displayFK = true;
+         } else {
+           this.displayFK = false;
+         }
+       },
+       showPrimary(e) {
+         if (e.target.checked) {
+           this.isPrimary = true;
+         } else {
+           this.isPrimary = false;
+         }
+       },
+       getQueryStringValue (key) {  
+   return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+       },
+
+       getApps() {
+           var appName = this.getQueryStringValue('app');
+         var self=this;
+         var root = window.location.href;
+				root = root.replace('/editwizard?app='+appName, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+         axiosInst.get('api/ezybaas/apps/'+appName+'/')
+           .then(function (response) {
+             console.log("GET APPS",response.data);
+             self.erd.app = response.data;
+             self.db.app = response.data;
+           })
+           .catch(function (error) {
+             self.errorGenerated = error;
+             document.getElementById("error_div_for_api").style.display = 'block';
+             document.getElementById("error_div_for_api").innerHTML = error;
+             $("#error_div_for_api").show().delay(900).fadeOut();
+             console.log(error);
+           });
+       },
+       
+       editApp() {
+         let self = this;
+        var root = window.location.href;
+				root = root.replace('/editwizard?app='+this.erd.app.name, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+         axiosInst.put('api/ezybaas/apps/'+this.erd.app.name +'/', {
+           name: this.erd.app.name,
+           auth: this.erd.app.auth,
+           description: this.erd.app.description,
+           dirty: true,
+           version: (this.erd.app.version+1)
+         })
+           .then(function (response) {
+             console.log('PUT apps:' + response);
+             self.postTables();
+           })
+           .catch(function (error) {
+             self.errorGenerated = error;
+             document.getElementById("error_div_for_api").style.display = 'block';
+             document.getElementById("error_div_for_api").innerHTML = error;
+             $("#error_div_for_api").show().delay(900).fadeOut();
+             console.log(error);
+           });
+   
+       },
+
+        getTables() {
+         var appName = this.getQueryStringValue('app');
+         var self=this;
+         var selectedApp = document.getElementById('appName').value;
+         var root = window.location.href;
+				root = root.replace('/editwizard?app='+appName, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+         axiosInst.get('api/ezybaas/tables/')
+
+           .then(function (response) {
+             var tables = response.data;
+             for(i = 0; i < tables.length; i++) {
+               var table = tables[i];
+               if(appName == table.app) {
+                 self.addTable(table.name)
+                 self.db.tables.push(table);
+                 //console.log("Table Match found = " + table.name);
+               }
+             }
+             //console.log("GET TABLES",response.data);
+           })
+           .catch(function (error) {
+             self.errorGenerated = error;
+             document.getElementById("error_div_for_api").style.display = 'block';
+             document.getElementById("error_div_for_api").innerHTML = error;
+             $("#error_div_for_api").show().delay(900).fadeOut();
+             console.log(error);
+           });
+       },     
+      
+
+       getFields(appName){
+         var appName = this.getQueryStringValue('app');
+         var self=this;
+         var root = window.location.href;
+				root = root.replace('/editwizard?app='+appName, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+         axiosInst.get('api/ezybaas/fields/')
+           .then(function (response) {
+             var fields = response.data;
+             for(i = 0; i < fields.length; i++) {
+               var field = fields[i];
+               if(appName == field.app) {
+                 self.insertField(field.table, fields[i]);
+                 self.db.fields.push(fields[i]);
+               }
+             }
+             //console.log("GET FIELDS",response.data);
+           })
+           .catch(function (error) {
+             self.errorGenerated = error;
+             document.getElementById("error_div_for_api").style.display = 'block';
+             document.getElementById("error_div_for_api").innerHTML = error;
+             $("#error_div_for_api").show().delay(900).fadeOut();
+             console.log(error);
+           });
+       },
+
+    isTablePresent(tableName) {
+         var tableIsPresent = false;
+         let self = this;
+         var dbtables = self.db.tables;
+            for(let index in dbtables) {
+               if(dbtables[index].name == tableName)  {
+                  tableIsPresent = true;
+                  return tableIsPresent;
+               }
+            }
+         return tableIsPresent;
+      },
+
+      isTablePresentInErd(tableName) {
+         var tableIsPresent = false;
+         let self = this;
+         var tables = self.erd.tables;
+         for(let index in tables) {
+            if(tables[index] == tableName)  {
+               tableIsPresent = true;
+               return tableIsPresent;
+            }
+         }
+         return tableIsPresent;
+      },
+
+      isFieldPresentInErd(fieldId) {
+      let self = this;
+      var isField = false;
+      for (let table of this.erd.tables) {
+         if (this.erd.fields[table]) {
+            for (var key in this.erd.fields[table]) {
+              if (this.erd.fields[table][key].pk == fieldId)
+                  {
+                     console.log('.....fields in erd and db........',fieldId,this.erd.fields[table][key].pk);
+                        isField = true;
+                        return isField;              
+                  }
+            }
+         }
+      }
+         return isField;
+      },
+
+      postTables() {
+         let self = this;  
+         var tables = this.erd.tables;
+         for (let table in tables) {
+
+            if(self.isTablePresent(this.erd.tables[table])) {
+            axios.put('api/ezybaas/tables/'+this.erd.app.name + this.erd.tables[table]+'/', {
+                name: this.erd.tables[table],
+                app: this.erd.app.name,
+                key: this.erd.app.name + this.erd.tables[table],
+              })
+                .then(function (response) {
+                  //console.log("PUT TABLES",response.data);
+                  self.postFields(self.erd.app.name, self.erd.tables[table], self);
+                })
+                .catch(function (error) {
+                  document.getElementById("error_div_for_api").style.display = 'block';
+                  document.getElementById("error_div_for_api").innerHTML = error;
+                  $("#error_div_for_api").show().delay(900).fadeOut();
+                  console.log(error);
+                });
+                
+              }
+              else
+              {
+            var selectedApp = document.getElementById('appName').value;
+            var root = window.location.href;
+				root = root.replace('/editwizard?app='+selectedApp, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+            axiosInst.post('api/ezybaas/tables/', {
+                name: this.erd.tables[table],
+                app: this.erd.app.name,
+                key: this.erd.app.name + this.erd.tables[table],
+              })
+                .then(function (response) {
+                  //console.log("POST TABLES",response.data);
+                  self.postFields(self.erd.app.name, self.erd.tables[table], self);
+                })
+                .catch(function (error) {
+                  document.getElementById("error_div_for_api").style.display = 'block';
+                  document.getElementById("error_div_for_api").innerHTML = error;
+                  $("#error_div_for_api").show().delay(900).fadeOut();
+                  console.log(error);
+                });
+            }  
+         }
+
+        var dbtables = self.db.tables;
+        for(let index in dbtables) {
+           if(!self.isTablePresentInErd(dbtables[index].name))
+           {
+              console.log('Delete table ' + dbtables[index].name);
+              self.deleteTableFromDb(self.erd.app.name, dbtables[index].name);
+           }
+        }
+    
+      },
+
+      deleteTableFromDb(app , table) {
+         var self=this;
+         var selectedApp = document.getElementById('appName').value;
+         var root = window.location.href;
+				root = root.replace('/editwizard?app='+selectedApp, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+         axiosInst.delete('api/ezybaas/tables/'+app+table+'/')
+         .then(function (response) {
+            console.log("Table Deleted  response= " + response);
+         })
+         .catch(function (error) {
+            document.getElementById("error_div_for_api").style.display = 'block';
+            document.getElementById("error_div_for_api").innerHTML = error;
+            $("#error_div_for_api").show().delay(900).fadeOut();
+            console.log(error);
+         });
+       },  
+
+      DeleteFieldfromDb(table , fieldId) {
+            var self=this;
+            var selectedApp = document.getElementById('appName').value;
+            var root = window.location.href;
+				root = root.replace('/editwizard?app='+selectedApp, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+            axiosInst.delete('api/ezybaas/fields/'+fieldId+'/')
+
+            .then(function (response) {
+               console.log("Field deleted response= " + response);
+            })
+            .catch(function (error) {
+               console.log(error);
+            });
+         },  
+
+   isFieldPresent(fieldId) {
+      var result = false;
+      let self = this;
+      var tables = self.db.fields;
+         for(let index in tables){
+            if(tables[index].id == fieldId){
+               console.log('fields which are present db and erd',tables[index].id);
+               result = true;
+               return result;
+            }
+         };
+      return result;
+   },
+
+
+  postFields(app, table, self) {
+
+         var myFields = self.erd.fields[table];
+         var obj, type;
+         for (var field in myFields) {
+           type = null;
+           if (myFields[field].type == 'ForeignKey')
+             type = 'ForeignKey';
+           else if (myFields[field].type == 'Text')
+             type = 'CharField';
+           else if (myFields[field].type == 'Number')
+             type = 'IntegerField';
+           else if (myFields[field].type == 'Bool')
+             type = 'BooleanField';
+           else if (myFields[field].type == 'Date')
+             type = 'DateTimeField';
+
+         if(self.isFieldPresent(myFields[field].pk)){
+            var selectedApp = document.getElementById('appName').value;
+            var root = window.location.href;
+				root = root.replace('/editwizard?app='+selectedApp, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+           axiosInst.put('api/ezybaas/fields/'+ myFields[field].pk +'/', {
+             table: table,
+             name: myFields[field].name,
+             app: app,
+             tablekey: app+table,
+           })
+             .then(function (response) {
+               console.log("PUT FIELDS",response.data);
+             })
+             .catch(function (error) {
+               document.getElementById("error_div_for_api").style.display = 'block';
+               document.getElementById("error_div_for_api").innerHTML = error;
+               $("#error_div_for_api").show().delay(900).fadeOut();
+               console.log(error);
+             });
+         }
+         
+         else
+         {
+            var selectedApp = document.getElementById('appName').value;
+           var root = window.location.href;
+				root = root.replace('/editwizard?app='+selectedApp, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+           axiosInst.post('api/ezybaas/fields/', {
+             app: app,
+             table: table,
+             tablekey: app + table,
+             name: myFields[field].name,
+             type: type,
+             null: myFields[field].nullable,
+             blank: myFields[field].blankable,
+             default: myFields[field].defaultValue,
+             min: myFields[field].min,
+             max: myFields[field].max,
+             unique: myFields[field].unique,
+             primarykey: myFields[field].pk,
+             foreignkeytable: myFields[field].fk,
+             ondelete: myFields[field].onDelete,
+           })
+             .then(function (response) {
+               console.log("POST FIELDS",response.data);
+             })
+             .catch(function (error) {
+                document.getElementById("error_div_for_api").style.display = 'block';
+                document.getElementById("error_div_for_api").innerHTML = error;
+                $("#error_div_for_api").show().delay(900).fadeOut();
+               console.log(error);
+             });
+         }
+      }
+
+      var dbFields = self.db.fields;
+      for(let field in dbFields) {
+         if (!self.isFieldPresentInErd(dbFields[field].id)) {
+            console.log('field to delete',dbFields[field].id);
+            self.DeleteFieldfromDb(table, dbFields[field].id);
+         }
+      }
+   },
+       warn: function (message, event) {
+         // now we have access to the native event
+         if (event) event.preventDefault()
+         alert(message)
+       },
+       atable: function (event) {
+         this.addTable(this.tableName)
+       },
+       afield: function (event) {
+         this.addField(this.tableName, this.fieldName, this.fieldType, this.relatedTable, this.pk)
+       },
+       onComplete: function () {
+         this.editApp();
+         $('#successModal').modal('show');
+   
+       },
+       beforeTabSwitch1: function () {
+         if (this.erd.app.name == '') {
+           this.isValid.appName = false;
+           return false;
+         } else if (this.erd.app.name.indexOf(' ') !== -1) {
+           this.isValid.appName = false;
+           return false;
+         }
+         return true;
+       },
+       beforeTabSwitch2: function () {
+         if (this.erd.tables) {
+           this.isValid.tableName=true;
+           if (Object.keys(this.erd.fields).length !== 0) {
+             let self = this;
+             let flag = true;
+             Object.keys(self.erd.fields).forEach(function (key) {
+               if (self.erd.fields[key][0]) {
+   
+               } else {
+                 flag = false;
+                 self.isValid.fieldName=false;
+               }
+             });
+             return flag;
+           }
+         }
+         this.isValid.tableName=false;
+         return false;
+       }
+     },
+   
+     delimiters: ['{[{', '}]}']
+   
+   
+   });
+</script>
+<script type="text/javascript">
+$("#saveBtn").click(function () {
+    $('#successModal').modal('hide');
+    var selectedApp = document.getElementById('appName').value;
+    var root = window.location.href;
+				root = root.replace('/editwizard?app='+selectedApp, "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+    axiosInst.post('api/ezybaas/golive/',{
+  "app":selectedApp
+    })
+    .then(function (response) {
+      $("#success_div_for_api").show().delay(900).fadeOut();
+      location.reload();
+      console.log(response);
+    })
+    .catch(function (error) {
+      document.getElementById("error_div_for_api").style.display = 'block';
+      document.getElementById("error_div_for_api").innerHTML = error;
+      $("#error_div_for_api").show().delay(900).fadeOut();
+      console.log(error);
+    });
+
+});
+</script>
+{% endblock footscripts %}

@@ -1,0 +1,41 @@
+{% extends "ezybaas/layout.html" %}
+
+{% block topbarheader %}
+<span class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block">
+    <a class="h4 mb-0 text-white d-none d-lg-inline-block"
+        href="{{ url('index') }}">Home</a>&nbsp;>&nbsp;Apps&nbsp;
+</span>
+{% endblock %}
+
+{% block bodycontent %}
+
+<!-- Gives Preset to the Table, such that it does not start after the Blue Graient Finishes-->
+<div class="container-fluid mt--9">
+
+    <div class="row">
+        <div class="col-xl-12 mb-5 mb-xl-0">
+            {% if messages %}
+
+            {% for message in messages %}
+            <div class="alert 
+            {% if message.tags == 'info' %}
+                alert-success
+            {% else %}
+                alert-danger
+            {% endif %}
+            alert-dismissible fade show" role="alert">
+                <span class="alert-inner--icon"><i class="fa fa-info-circle"></i>&nbsp; &nbsp;</span>
+                <span class="alert-inner--text">{{ message }}</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+
+            {% endif %}
+            {{ version.name }}
+        </div>
+    </div>
+</div>
+
+{% endblock bodycontent %}

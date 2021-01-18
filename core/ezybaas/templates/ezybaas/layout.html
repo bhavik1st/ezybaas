@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% block head %}
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  {% block title %}
+  <title>
+     EzyBaas - DB to API in minutes! 
+  </title>
+  {% endblock title %}
+
+  {% block styles %}
+  {% load static %}
+<link href="{% static 'css/vue-form-wizard.min.css' %}" rel="stylesheet">
+  <!-- Favicon -->
+  <link href="{% static 'img/brand/onlylogofinal.png' %}" rel="icon" type="image/png">
+  <!-- Fonts -->
+  <link href="{% static 'css/googleapi.css' %}" rel="stylesheet">
+  <!-- Icons -->
+  <link href="{% static 'js/plugins/nucleo/css/nucleo.css' %}" rel="stylesheet" />
+  <link href="{% static 'js/plugins/@fortawesome/fontawesome-free/css/all.min.css' %}" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="{% static 'css/argon-dashboard.css' %}" rel="stylesheet" />
+
+  {% endblock styles %}
+</head>
+{% endblock head %}
+
+{% block body %}
+<body class="bg-gradient-primary">
+    {% block leftbar %}
+    <nav class="navbar fixed-top navbar-vertical fixed-left navbar-expand-md navbar-light bg-white" id="sidenav-main">
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidenav-collapse-main"
+        aria-controls="sidenav-main" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Brand -->
+      <a class="navbar-brand pt-0" href="{% url 'index' %}">
+        <img src="{% static 'img/brand/ezybaas1.png' %}" class="navbar-brand-img" alt="...">
+      </a>
+      <!-- User -->
+      <ul class="nav align-items-center d-md-none">
+
+        <li class="nav-item dropdown">
+          <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
+            <div class="media align-items-center">
+              <span class="avatar avatar-sm rounded-circle">
+                <!-- Todo: Change this image to stock user image -->
+                <img alt="Image placeholder" src="{% static 'img/theme/user.jpg' %}">
+              </span>
+              <div class="media-body ml-2 d-none d-lg-block">
+                <span class="mb-0 text-sm  font-weight-bold">{{ request.user.get_username }}</span>
+              </div>
+            </div>
+          </a>
+          <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-center">
+            <div class=" dropdown-header noti-title">
+              <h6 class="text-overflow m-0">EzyBaas:{{ezybaas_version}}</h6>
+            </div>
+
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'logout' %}" class="dropdown-item">
+              <i class="ni ni-user-run"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </li>
+
+
+      </ul>
+      <!-- Collapse -->
+      <div class="collapse navbar-collapse" id="sidenav-collapse-main">
+        <!-- Collapse header -->
+        <div class="navbar-collapse-header d-md-none">
+          <div class="row">
+            <div class="col-6 collapse-brand">
+              <a href="./index.html">
+                <img src="{% static 'img/brand/ezybaas1.png' %}">
+              </a>
+            </div>
+            <div class="col-6 collapse-close">
+              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#sidenav-collapse-main"
+                aria-controls="sidenav-main" aria-expanded="false" aria-label="Toggle sidenav">
+                <span></span>
+                <span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Navigation -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class=" nav-link" href=" {% url 'index' %}">
+              <i class="ni ni-tv-2 text-primary"></i> Dashboard
+            </a>
+          </li>
+
+
+         <li class="">
+
+          <a class="nav-link collapsed" href="#submenu1sub1" data-toggle="collapse" data-target="#submenu1sub1">
+          <i class="ni ni-app"></i> Apps
+          </a>
+          <li class="nav-item">
+            <div class="collapse" id="submenu1sub1" aria-expanded="false">
+                <ul class="flex-column nav pl-4">
+                    <li class="nav-item">
+                          {% for app in apps %}
+                              <a class="nav-link p-1" href="{% url 'editwizard' %}?app={{app}}">
+                          <i class="ni ni-app"></i> {{app}}
+                          </a>
+                          {% endfor %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+          </li>
+        </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'importdata' %}">
+              <i class="fas fa-database"></i> Import / Export
+            </a>
+          </li>
+
+        <li class="nav-item">
+          <a class=" nav-link" href=" {% url 'sysinfo' %}">
+            <i class="fas fa-info"></i> System Info
+          </a>
+        </li>
+
+        </ul>
+        <!-- Divider -->
+        <hr class="my-3">
+        <!-- Heading -->
+        <h6 class="navbar-heading text-muted">Settings</h6>
+        <!-- Navigation -->
+        <ul class="navbar-nav mb-md-3">
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dbsettings' %}">
+              <i class="fas fa-database"></i> Databases
+            </a>
+          </li>
+
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile' %}">
+              <i class="fas fa-user-astronaut"></i> Admin Profile
+            </a>
+          </li>
+
+        </ul>
+        <!-- Divider -->
+        <hr class="my-3">
+        <!-- Heading -->
+        <h6 class="navbar-heading text-muted">Documentation</h6>
+        <!-- Navigation -->
+        <ul class="navbar-nav mb-md-3">
+          <li class="nav-item">
+            <a class="nav-link"
+              href="https://ezybaas.com/">
+              <i class="ni ni-spaceship"></i> Getting started
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://ezybaas.com/">
+              <i class="fas fa-question"></i> Help
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'about' %}">
+              <i class="fas fa-info-circle"></i> About
+            </a>
+          </li>
+        </ul>
+        {% block footer %}
+
+        {% endblock footer %}
+      </div>
+      <!-- </div> -->
+    </nav>
+    {% endblock leftbar %}
+
+  {% block maincontent %}
+  <div class="main-content bg-gradient-primary">
+
+    {% block topgradient %}
+    <div id="topgradient" class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+    </div>
+    {% endblock topgradient %}
+    
+    {% block topbar %}
+    <!-- Topbar -->
+    <nav class="navbar navbar-top navbar-expand-md navbar-dark bg-gradient-primary" id="navbar-main">
+      <div class="container-fluid">
+        <!-- Brand -->
+        {% block topbarheader %}
+        <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" href="{% url 'index'%}">
+          <i class="ni ni-tv-2"></i>&nbsp;Dashboard</a>
+        {% endblock topbarheader %}
+
+        {% if request.user.is_superuser %}
+        <ul class="navbar-nav align-items-center d-none d-md-flex">
+          <li class="nav-item dropdown">
+            <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              <div class="media align-items-center">
+                <i class="fas fa-user-astronaut"></i>
+
+
+                <div class="media-body ml-2 d-none d-lg-block">
+                  <span class="mb-0 text-sm  font-weight-bold">{{ request.user.get_username}}</span>
+                </div>
+              </div>
+            </a>
+            <div id="versiondiv" class="dropdown-menu dropdown-menu-arrow dropdown-menu-right">
+              <div class=" dropdown-header noti-title">
+                <h6 class="text-overflow m-0">EzyBaas:{{ezybaas_version}}</h6>
+              </div>
+
+              <div class="dropdown-divider"></div>
+              <a href="{% url 'logout' %}" class="dropdown-item">
+                <i class="ni ni-user-run"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
+    </nav>
+    <!-- End TopBar -->
+    {% endblock topbar %}
+
+    {% block charts %}
+
+
+
+    {% endblock charts %}
+
+    {% block bodycontent %}
+
+    {% endblock bodycontent %}
+
+
+  </div>
+  {% endblock maincontent %}
+
+  {% block footscripts %}
+  {% load static %}
+  
+
+  <!--   Core   -->
+  <script src="{% static 'js/plugins/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <!--   Optional JS   -->
+  <script src="{% static 'js/plugins/chart.js/dist/Chart.min.js' %}"></script>
+  <script src="{% static 'js/plugins/chart.js/dist/Chart.extension.js' %}"></script>
+  <!--   Argon JS   -->
+  <script src="{% static 'js/argon-dashboard.min.js' %}"></script>
+
+  <!-- Axios.js-->
+  <script src="{% static 'node_modules/axios/dist/axios.min.js' %}"></script>
+
+  <script src="{% static 'node_modules/vue/dist/vue.js' %}"></script>
+  <script src="{% static 'node_modules/dagre/dist/dagre.min.js' %}"></script>
+<script src="{% static 'node_modules/dagre/dist/dagre.min.js' %}"></script>
+<script src="{% static 'node_modules/nomnoml/dist/nomnoml.js' %}"></script>
+<link href="{% static 'css/vue-good-table.min.css' %}" rel="stylesheet" />
+<script src="{% static 'js/vue-good-table.min.js' %}"></script>
+
+<script src="{% static 'node_modules/sortablejs/Sortable.min.js' %}"></script>
+<!--Vue Draggable-->
+<script src="{% static 'node_modules/vuedraggable/dist/vuedraggable.umd.min.js' %}"></script>
+
+<script src="{% static 'js/vue-form-wizard.js' %}"></script>
+
+
+  <!-- <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script> -->
+
+  <!-- DataTables -->
+  <!-- <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script> -->
+  {% endblock footscripts %}
+</body>
+{% endblock body %}
+
+</html>

@@ -1,0 +1,396 @@
+{% extends "ezybaas/layout.html" %}
+
+{% block head %}
+{{ block.super }}
+{% endblock head %}
+
+{% block topbarheader %}
+<span class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block">
+<a class="h4 mb-0 text-white d-none d-lg-inline-block" href="{% url 'index' %}">Home</a>&nbsp;>&nbsp;Settings&nbsp;>&nbsp;Databases
+</span>
+<!-- <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" href="{% url 'index' %}">Home</a>&nbsp;>&nbsp;Create App -->
+{% endblock %}
+
+{% block bodycontent %}
+<!-- Gives Preset to the Table, such that it does not start after the Blue Graient Finishes-->
+<div id="abcdefg">
+   <div class="container-fluid mt--7">
+      <div class="row">
+         <div class="col-xl-12 mb-5 mb-xl-0">
+            <div class="card shadow">
+               <div class="card-header border-0">
+                     <div style="float: left;">
+                        <h3 class="mb-0">DB Connection Settings</h3>
+                     </div>
+                     <div style="float: right;">
+                        <div v-for="record in database" v-if='record.key=="ezybaas"'>
+                           <button class="btn btn-icon btn-3 btn-primary"  @click="getEzybaasRecord(record);">
+                              <span class="btn-inner--text">Ezybaas DB Setting</span>
+                           </button>
+                           
+                        </div>
+
+                     </div>
+               </div>
+               
+                  <div class="table-responsive">
+                     <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                           <tr>
+                              <th scope="col">&nbsp;&nbsp;<i class="fas fa-database"></i>&nbsp;Key</th>
+                              <th scope="col"><i class="fas fa-code-branch"></i>&nbsp;Type</th>
+                              <th scope="col"><i class="fas fa-bolt"></i>&nbsp;Name</th>
+                              <th scope="col"><i class="fas fa-user-shield"></i>&nbsp;Host</th>
+                              <th scope="col"><i class="fas fa-traffic-light"></i>&nbsp;Port</th>
+                              <th scope="col"><i class="fas fa-user"></i>&nbsp;User</th>
+                              <th scope="col"><i class="fas fa-letter"></i>&nbsp;Status</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr v-for="db in database" v-if="db.key!='ezybaas'">
+                              <td>
+                                 {[{ db.key }]}
+                              </td>
+                              <td>
+                                 {[{ db.type }]}
+                              </td>
+                              <td>
+                                 {[{ db.name }]}
+                              </td>
+                              <td> 
+                                 {[{ db.host }]}
+                              </td>
+                              <td>
+                                 {[{ db.port }]}
+                              </td>
+                              <td>
+                                 {[{ db.user }]}
+                              </td>
+
+                              <td>
+                                 <a class="btn btn-sm btn-icon-only text-light activeDb" href="#activate" role="button"
+                                    aria-haspopup="true" aria-expanded="false" @click="getRecord(db)">
+                                    <i v-if="db.active==true" class="fas fa-check-circle text-success" id="deactivated" ></i>
+                                    <i v-else class="fas fa-times-circle text-danger" id="deactivated" id="activated"></i>
+                                 </a>
+                                    <a class="btn btn-sm btn-icon-only text-light openDb" href="#changeDb" role="button"
+                                    aria-haspopup="true" aria-expanded="false" @click="getInfo(db)">
+                                    <i class="fas fa-edit text-primary"></i>
+                                 </a>
+
+                              </td>
+                              
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   
+      <div class="modal fade" id="changeDb" role="dialog" aria-labelledby="changeDbLabel"
+         aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="changeDbLabel"><i class="fas fa-check-circle"></i>&nbsp;Edit Database Settings
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <div id="DbModal">
+                     <form method="POST">
+                        {% csrf_token %}
+                        <div class="card bg-secondary shadow">
+                           <div class="card-body">
+                              <div class="form-group">
+
+                                 <h6 class="heading-small text-muted mb-4"> Database Key : {[{db.key}]}</h6>
+
+                                 <div class="pl-lg-4">
+                                    <div class="row">
+                                       <div class="col-lg-6">
+                                       <label class="form-control-label" for="input-dbType">Type</label>
+                                          <div class="form-group focused" v-bind:class="{'has-danger': !isValid.dbType}">
+                                             <input id="dbType" type="text" id="input-dbType" name="input-dbType" placeholder="Type"
+                                                class="form-control form-control-alternative" v-model="db.type">
+                                          </div>
+                                       </div>
+
+                                       <div class="col-lg-6">
+                                       <label class="form-control-label" for="input-dbName">Name</label>
+                                          <div class="form-group focused" v-bind:class="{'has-danger': !isValid.dbName}">
+                                             <input id="dbName" type="text" id="input-dbName" name="input-dbName" placeholder="Name"
+                                                class="form-control form-control-alternative" v-model="db.name">
+                                          </div>
+                                       </div>
+
+
+
+                                       <div class="col-lg-6">
+                                       <label class="form-control-label" for="input-dbHost">HostName</label>
+                                          <div class="form-group focused" v-bind:class="{'has-danger': !isValid.dbHost}">
+                                             <input id="dbHost" type="text" id="input-dbHost" name="input-dbHost" placeholder="HostName"
+                                                class="form-control form-control-alternative" v-model="db.host">
+
+                                          </div>
+                                       </div>
+
+
+                                       <div class="col-lg-6">
+                                       <label class="form-control-label" for="input-dbPort">Port</label>
+                                          <div class="form-group focused" v-bind:class="{'has-danger': !isValid.dbPort}">
+                                             <input id="dbPort" type="text" id="input-dbPort" name="input-dbPort" placeholder="Port"
+                                                class="form-control form-control-alternative" v-model="db.port">
+                                          </div>
+                                       </div>
+
+
+                                       <div class="col-lg-6">
+                                       <label class="form-control-label" for="input-dbUsername">Username</label>
+                                          <div class="form-group focused" v-bind:class="{'has-danger': !this.isValid.dbUsername}">
+                                             <input id="dbUsername" type="text" id="input-dbUsername" name="input-dbUsername" placeholder="Username"
+                                                class="form-control form-control-alternative" v-model="db.user">
+                                          </div>
+                                       </div>
+
+
+
+                                       <div class="col-lg-6">
+                                       <label class="form-control-label" for="input-dbPassword">Password</label>
+                                          <div class="form-group focused" v-bind:class="{'has-danger': !isValid.dbPassword}">
+                                             <input id="dbPassword" type="text" id="input-dbPassword" name="input-dbPassword" placeholder="Password"
+                                                class="form-control form-control-alternative" v-model="db.password">
+                                          </div>
+                                       </div>
+
+                                    </div>
+                                 </div>
+
+
+                              </div>
+
+                           </div>
+                        </div>
+                     </form> 
+                  </div>
+               </div> 
+               <div class="modal-footer">
+                  <button type="button" class="btn btn btn-gradient-secondary" data-dismiss="modal">Cancel</button>
+                  <button v-if="db.key!='ezybaas'" type="button" class="btn btn-primary" id="activeDb" @click="putDb()">Save</button>
+                  <button v-if="db.key=='ezybaas'" type="button" class="btn btn-primary" id="activeDb" @click="putDb()">Save</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+   <div class="modal fade" id="activateConfirm" tabindex="-1" role="dialog" aria-labelledby="activateConfirmLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="activateConfirmLabel"><i class="fas fa-check-circle"></i>&nbsp;Change database
+               </h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <div class="row">
+                  <div class="col">
+                     Do you want to change database?
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <a><button type="button"
+                  class="btn btn btn-gradient-secondary" data-dismiss="modal">No</button></a>
+               <a><button type="button" class="btn btn-primary" @click="activeAnother()"> Yes </button></a>
+            </div>
+         </div>
+      </div>
+   </div>
+   	<div class="alert alert-warning" role="alert" id="err_div" style="display:none;">
+	<strong>Error!</strong> 
+	</div>
+</div>
+{% endblock bodycontent %}
+
+{% block footscripts %}
+
+{{ block.super }}
+
+<script>
+{% comment %} $(document).ready(function() {
+   var root = window.location.href;
+   root = root.replace('/dbsettings/', "");
+ }); {% endcomment %}
+$(document).on('click', '.openDb[href^="#"]', function () {
+   $('#changeDb').modal('show');
+});
+$(document).on('click', '.activeDb[href^="#"]', function () {
+   $('#activateConfirm').modal('show');
+});
+
+ var v1 = new Vue({
+      el:"#abcdefg",
+   	data: {
+   		database: null,
+         db: {
+               key:'',
+               host: 'None',
+               name: '',
+               password: 'None',
+               port:'None',
+               type:'None',
+               user:'None',
+         },
+         isValid: {
+            dbType: true,
+            dbName: true,
+            dbPort: true,
+            dbHost: true,
+            dbUsername: true,
+            dbPassword: true,
+         },
+   	},
+   	methods: {
+   		init() {
+   			var self = this;
+
+            var root = window.location.href;
+				root = root.replace('/dbsettings/', "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+   			axiosInst.get('api/ezybaas/db/')
+   				.then(function (response) {
+   					self.database = response.data;
+                  self.db = response.data;
+   					console.log(',,,,,,,,,,,,,,',self.db);
+   				}),
+   				error => {
+   					console.error(error);
+                  document.getElementById("err_div").style.display = 'block';
+         			document.getElementById("err_div").innerHTML = error;
+   				};
+   		},
+
+      validate(db) {
+         var self = this;
+         if (self.db.type == '' && self.db.type == 'null') {
+            self.isValid.dbType = false;
+            return false;
+         }
+         else if (self.db.name == '' || self.db.name == 'null') {
+            self.isValid.dbName = false;
+            return false;
+         }
+         else if(this.db.port == '' || self.db.port == 'null'){
+            this.isValid.dbPort = false;
+            return false;
+         }
+         else if(this.db.host == '' || self.db.null == 'null'){
+            this.isValid.dbHost = false;
+            return false;
+         }
+         else if(this.db.user == '' || self.db.user == 'null'){
+            this.isValid.dbUsername = false;
+            return false;
+         }
+         else if(this.db.password == '' || self.db.password == 'null'){
+            this.isValid.dbPassword = false;
+            return false;
+         }
+         return true;
+      },
+
+         getInfo(db){
+            var self = this;
+               self.db = db;
+         },
+      putDb(){
+         var self = this;
+         console.log('dddddddddddddddbbbbbbbbbbbbb',self.db)
+         self.validate(self.db);
+         var root = window.location.href;
+				root = root.replace('/dbsettings/#changeDb', "");
+				var axiosInstance = axios.create({
+					baseURL: root
+				})
+
+         axiosInstance.put('api/ezybaas/db/'+ self.db.key +'/', {
+            key:self.db.key,
+            type:self.db.type,
+            name:self.db.name,
+            host:self.db.host,
+            port:self.db.port,
+            user:self.db.user,
+            password:self.db.password,
+         })
+           .then(function (response) {
+             console.log('PUT db:' + response);
+             var root = window.location.href;
+             root = root.replace('#changeDb', " ");
+             location.replace(root);
+              $('#changeDb').modal('hide'); 
+           })
+           .catch(function (error) {
+             self.errorGenerated = error;
+             document.getElementById("err_div").style.display = 'block';
+         	 document.getElementById("err_div").innerHTML = error;
+             console.log(error);
+           });
+   
+       },
+      getRecord(record){
+         var self = this;
+         self.db = record;
+
+      },
+      activeAnother(){
+         var self = this;
+         console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa',self.db.key);
+
+         var root = window.location.href;
+				root = root.replace('dbsettings/#activate', "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+
+         axiosInst.post('api/ezybaas/dbactive/', {
+            key:self.db.key,
+         })
+           .then(function (response) {
+             console.log('database changed successfully:' + response);
+              $('#activateConfirm').modal('hide'); 
+           })
+           .catch(function (error) {
+             self.errorGenerated = error;
+             document.getElementById("err_div").style.display = 'block';
+         	 document.getElementById("err_div").innerHTML = error;
+             console.log(error);
+           });
+          
+       },
+      getEzybaasRecord(rerd){
+         var self = this;
+         self.db = rerd;
+         console.log('lllllllllllllllll',rerd)
+         $('#changeDb').modal('show');
+      },
+   
+   	},
+
+   	delimiters: ['{[{', '}]}'],
+   	mounted() {
+   		this.init()
+   	}
+   
+   });
+
+   </script>
+{% endblock footscripts %}

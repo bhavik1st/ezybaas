@@ -1,0 +1,24 @@
+Create  Package Step
+
+1)  Create Ezybaas-package Folder
+
+2)  Create setup.py , mainifest.in , readme.rst and Licence File
+
+3)  Add project Folder in Ezybaas-package Folder
+4)  Add manage.py file in ezybaas-package folder
+5)  Go to ezybaas-package or django-ezybaas in terminal
+4)  Run "python setup.py sdist "
+
+
+
+// Run "python setup.py sdist bdist_wheel"
+
+
+
+Install Package Step 
+pip install "path"
+
+
+pip install "D:/susthitsoft/Dj_Template/ezybaas/ezybaas-package/dist/ezybaas-0.0.1.tar.gz"
+
+

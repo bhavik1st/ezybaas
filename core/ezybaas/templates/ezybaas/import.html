@@ -1,0 +1,242 @@
+{% extends "ezybaas/layout.html" %}
+{% block topbarheader %}
+<span class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block">
+<a class="h4 mb-0 text-white d-none d-lg-inline-block" href="{% url 'index' %}">Home</a>&nbsp;>&nbsp; Import / Export
+</span>
+{% endblock %}
+{% block bodycontent %}
+<div class="container-fluid mt--7">
+<div class="row">
+   <div class="col-xl-12 mb-5 mb-xl-0">
+      <form role="form">
+         {% csrf_token %}        
+         <div class="">
+            <div class="card bg-secondary shadow">
+               <div class="card-header bg-white border-0">
+                  <div class="row">
+                     <div class="col-8">
+                        <h3 class="mb-0"> Import / Export </h3>
+                     </div>
+                     <div class="col-4 text-right">
+                        <button class="btn btn-icon btn-3 btn-primary" id="exportbtn" type="button">
+                        <span class="btn-inner--icon"><i class="fas fa-download"></i></span>
+                        <span class="d-none d-md-inline btn-inner--text"> Export All &nbsp;&nbsp;
+                        </button>
+                     </div>
+                  </div>
+               </div>
+               <div class="card-body">
+                  <div class="col-lg-12">
+                     <div class="alert alert-warning" role="alert" id="err_div" style="display:none;">
+                        <strong>Error!</strong> Data not found.! or Data is not valid json.!
+                     </div>
+                     <div class="alert alert-success" role="alert" id="err_div2" style="display:none;">
+                        <strong>Success</strong> Import Successful.!
+                     </div>
+
+
+
+
+                     <div class="form-group focused">
+
+
+                        <div class="custom-file">
+                           <input type="file" class="custom-file-input" id="fileid" accept="application/json">
+                           <label class="custom-file-label" for="customFile">Choose json file...</label>
+                        </div>
+                     </div>
+
+                     <div class="form-group focused">
+                     <div id="previewData" style="display:none;">
+                        <label class="" for="importdata">Preview</label>
+                        <textarea placeholder="Paste json data here..!" class="form-control" id="importdata" style="width:100%;" 
+                           name="importdata" rows=10></textarea>
+                     </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="card-footer bg-white border-0">
+                  <div class="row alin-items-center">
+                     <div class="col-8">
+                     </div>
+                     <div class="col-4 text-right">
+                        <button class="btn btn-icon btn-3 btn-primary" id="importbtn" type="button">
+                        <span class="btn-inner--icon"><i class="fas fa-upload"></i></span>
+                        <span class="d-none d-md-inline btn-inner--text"> Import &nbsp;&nbsp;
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </form>
+   </div>
+
+   <div class="modal fade" id="importSuccess" tabindex="-1" role="dialog" aria-labelledby="importSuccessLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="importSuccesssLabel"><i class="fas fa-check-circle"></i>&nbsp;Import
+               </h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <div class="row">
+                  <div class="col">
+                     Do you want to import schema?
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn btn-gradient-secondary" data-dismiss="modal">No</button>
+               <button type="button" class="btn btn-primary" id="postFile">Yes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal fade" id="exportSuccess" tabindex="-1" role="dialog" aria-labelledby="exportSuccessLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="exportSuccessLabel"><i class="fas fa-check-circle"></i>&nbsp;Export
+               </h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body bg-secondary">
+               <div class="row">
+                  <div class="col">
+                     Do you want to export schema?
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn btn-gradient-secondary" data-dismiss="modal">No</button>
+               <button type="button" class="btn btn-primary" onclick="" id="getFile">Yes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock bodycontent %}
+{% block footscripts %}
+{{ block.super }}
+
+<script>
+
+   $('#fileid').on('change',function(){
+      var fileName = document.getElementById('fileid');
+      $(this).next('.custom-file-label').html(fileName.files.item(0).name);
+   })
+   
+    $('#fileid').on('change', function(e){
+        readFile(this.files[0], function(e) {
+           document.getElementById('previewData').style.display = 'block';
+           var fileDetails = e.target.result;
+           var pretty = JSON.stringify(JSON.parse(fileDetails), undefined, 4);
+           console.log(pretty);
+           // $('#importdata').text(fileDetailss);
+           document.getElementById('importdata').innerHTML = pretty;
+           document.getElementById('importdata').readOnly = true;
+        });
+    });
+    function readFile(file, onLoadCallback){
+    var reader = new FileReader();
+    reader.onload = onLoadCallback;
+    reader.readAsText(file);
+   }
+      
+   function validatefile() {
+      var filedata = document.getElementById('fileid').value
+      if (filedata == '')
+      {
+         document.getElementById('err_div').style.display = 'block';
+         return false;
+      }
+      else{
+         document.getElementById('err_div').style.display = 'none';
+         return true;
+      }
+   
+   }
+   
+
+
+   $("#importbtn").click(function () {
+         var isfile = validatefile()
+         console.log(isfile)
+         if (isfile){ 
+            $('#importSuccess').modal('show');
+         }
+      });
+   
+      $("#postFile").click(function () {
+         $('#importSuccess').modal('hide'); 
+
+            var data = $("#importdata").val();
+            var jsonfiledata = JSON.parse(data);
+            var root = window.location.href;
+				root = root.replace('/importdata/', "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+
+
+            axiosInst({
+               url: 'api/ezybaas/settings/apps/schema/',
+               method: 'POST',
+               data:jsonfiledata,
+               })
+            //axios.post('/api/ezybaas/settings/apps/schema/', jsonfiledata)
+            .then(function (response) {
+            document.getElementById('err_div').style.display = 'none';
+            $("#err_div2").show().delay(900).fadeOut();
+            console.log(response);
+      })
+      .catch(function (error) {
+         console.log(error);
+         document.getElementById("err_div").style.display = 'block';
+         document.getElementById("err_div").innerHTML = error;
+      });   
+   });
+
+   
+      $("#exportbtn").click(function () {
+            $('#exportSuccess').modal('show');
+      });
+
+      var root = window.location.href;
+				root = root.replace('/importdata/', "");
+				var axiosInst = axios.create({
+					baseURL: root
+				})
+
+   
+      $("#getFile").click(function () {
+         $('#exportSuccess').modal('hide');
+
+
+         axiosInst({
+         url: 'api/ezybaas/settings/apps/schema/',
+         method: 'GET',
+         responseType: 'blob',
+         }).then((response) => {
+         const url = window.URL.createObjectURL(new Blob([response.data]));
+         const link = document.createElement('a');
+         link.href = url;
+         link.setAttribute("target", "_self");
+         link.setAttribute('download', 'ezybaas.json');
+         document.body.appendChild(link);
+         link.click();
+         $("#err_div2").show().delay(900).fadeOut();
+
+         });
+   }); 
+   
+</script>
+{% endblock footscripts %}

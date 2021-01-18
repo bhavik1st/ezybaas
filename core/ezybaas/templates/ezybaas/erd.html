@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My first Vue app</title>
+    <link href="{% static 'img/brand/onlylogofinal.png' %}" rel="icon" type="image/png">
+
+    <script src="{% static 'node_modules/vue/dist/vue.min.js' %}"></script>
+
+    <script src="{% static 'node_modules/dagre/dist/dagre.min.js' %}"></script>
+    <script src="{% static 'node_modules/nomnoml/dist/nomnoml.js' %}"></script>
+</head>
+
+<body>
+    <!-- <canvas id="target-canvas">CanVAs</canvas> -->
+    <div id="app">
+        {{ tableName }}
+
+          
+        
+        <div id="example">
+            tableName <input v-model="tableName" />
+            fieldName <input v-model="fieldName" />
+            fieldType <input v-model="fieldType" />
+            relatedTable <input v-model="relatedTable" />
+            PK <input v-model="primary" />
+            <button v-on:click="atable">AddTable</button>
+            <button v-on:click="afield">AddField</button>
+        </div>
+
+        <ul id="tables">
+            <li v-for="table in erd.tables">
+                {{ table }}
+            </li>
+        </ul>
+
+         <button @click="draw('erd-canvas')">Update</button>
+        <button @click="draw('erd-canvas')">Draw</button>
+
+        <canvas id="erd-canvas">ERD Canvas</canvas>
+<br />
+        {{ diagramData }} <br/>
+        {{ diagram }}
+
+    </div>
+    
+    <script>
+        Vue.config.devtools = true;
+        var app = new Vue({
+            el: '#app',
+            data: {
+                tableName: '',
+                fieldName: '',
+                fieldType: '',
+                relatedTable: '',
+                primary: '', 
+                message: '[nomnoml] is -> [awesome]',
+                erd: {
+                    tables: [ 'abc', 'bbc'
+                    ],
+                    fields: { 
+                        'abc' : [ { table: 'abc', 
+                                    name: 'abc', type: 'abc', related: 'abc'},
+                                    { table: 'abc2',
+                                    name: 'abc2', type: 'abc2', primary: 'yes',
+                                    related: 'bbc'} ]
+                    } 
+                },
+                diagram: '[NO TABLES]'
+
+            },
+            watch: {
+                diagram: function () {
+                    this.draw(null);
+                }
+            },
+            computed: {
+                diagramData: function () {
+                    var diagram = '';
+                    // TODO: replace this loop with index based enumeration
+                    // ASPER: https://stackoverflow.com/questions/3010840/loop-through-an-array-in-javascript
+                    for(const table of this.erd.tables) {
+                            var related = [];
+                            diagram += '[' + table;
+                                if(this.erd.fields[table]) { 
+                                for(var key in this.erd.fields[table]) {
+                                    diagram += '|' + this.erd.fields[table][key].name + ':' + this.erd.fields[table][key].type;
+                                    if(this.erd.fields[table][key].primary && this.erd.fields[table][key].primary != null &&
+                                    this.erd.fields[table][key].primary != '')
+                                        diagram += '*'
+                                    
+                                    if(this.erd.fields[table][key].related && this.erd.fields[table][key].related !=
+                                    null &&
+                                    this.erd.fields[table][key].related != '')
+                                        related.push(this.erd.fields[table][key].related);
+                                }
+                            }
+                            diagram += ']\n';
+
+                            for(const rtable of related) {
+                                diagram += '[' + table + ']->' + '[' + rtable + ']\n';
+                            }
+
+                    }
+
+                    
+                    this.diagram = diagram;
+                    return diagram;
+                }
+            },
+            methods: {
+                 updateDigram() {
+                    console.log('erd changes');   
+                 },
+                 drawDiagram(canvasId, diagram) {
+                    var canvas = document.getElementById(canvasId);
+                    var source = diagram;
+                    nomnoml.draw(canvas, source);
+                 },
+                draw(canvasId) {
+                    var diagramData = this.diagramData;
+                    
+                    if(!canvasId || canvasId == null || canvasId === undefined)
+                       canvasId = 'erd-canvas';
+                    
+                    if (diagramData == '')
+                        diagramData = '[NO TABLES]';
+                    
+                    this.drawDiagram(canvasId, diagramData);
+                },
+                addTable(tableName) {
+                    this.erd.tables.push(tableName);
+                },
+                addField(tableName, fieldName, type, relatedTable, primary) {
+                    var field = {
+                        table: tableName,
+                        name: fieldName,
+                        type: type,
+                        related: relatedTable,
+                        primary: primary
+                    };
+                    
+                    if(!this.erd.fields[field.table])
+                        this.erd.fields[field.table] = [];
+                    
+                    this.erd.fields[field.table].push(field);    
+                },
+                 atable: function (event) {
+
+                 this.addTable(this.tableName)
+                 },
+                 afield: function (event) {
+
+                 this.addField(this.tableName, this.fieldName, this.fieldType, this.relatedTable, this.primary )
+                 }
+            }
+
+        });
+    </script>
+
+</body>
+
+</html>

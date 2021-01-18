@@ -1,0 +1,9 @@
+include README.rst
+include db.json
+include LICENSE
+recursive-include ezybaas/static *
+recursive-include ezybaas/templates *
+include README.md
+
+
+

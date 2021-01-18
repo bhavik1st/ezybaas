@@ -1,0 +1,209 @@
+{% extends "ezybaas/layout.html" %}
+
+{% block head %}
+{{ block.super }}
+
+
+
+{% endblock head %}
+
+{% block topbarheader %}
+<span class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block">
+	<a class="h4 mb-0 text-white d-none d-lg-inline-block" href="{% url 'index' %}">Home</a>&nbsp;>&nbsp;System info
+</span>
+{% endblock %}
+{% block bodycontent %}
+
+
+
+<div class="row">
+	<!-- mt--8 Gives a Preset -->
+	<div class="container-fluid mt--8">
+		<div class="container" id="app">
+			<div class="row">
+
+				<div class="col-md-6 col-sm-12">
+
+					<div class="card shadow">
+						<div class="card-header border-0">
+							<div class="row">
+								<div class="col">
+
+									<h3 class="mb-0"><i class="fas fa-table"> </i> System Info</h3>
+
+								</div>
+
+							</div>
+
+
+						</div>
+
+						<div class="table-responsive">
+							<div>
+
+								<table class="table align-items-center table-flush" id="myTable">
+									<thead class="thead-light">
+										<tr>
+											<th scope="col"> Name</th>
+											<th scope="col"> Value</th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="(value, name) in system">
+											<td>
+												{[{name}]}
+											</td>
+
+
+											<td>
+												{[{value}]}
+											</td>
+
+										</tr>
+
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-md-6 col-sm-12">
+					<div class="card shadow">
+						<div class="card-header border-0">
+							<div class="row">
+								<div class="col">
+
+									<h3 class="mb-0"><i class="fas fa-table"> </i> Python Info</h3>
+
+								</div>
+
+							</div>
+
+
+						</div>
+						<div class="table-responsive">
+							<div>
+
+								<table class="table align-items-center table-flush" id="myTable">
+									<thead class="thead-light">
+										<tr>
+											<th scope="col"> Name</th>
+											<th scope="col"> Value</th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="(value, name) in python">
+											<td>
+												{[{name}]}
+											</td>
+
+											<td>
+												{[{value}]}
+											</td>
+
+										</tr>
+
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="alert alert-warning" role="alert" id="err_div" style="display:none;">
+			<strong>Error!</strong>
+		</div>
+	</div>
+
+	{% endblock bodycontent %}
+
+
+
+	{% block footscripts %}
+	{{ block.super }}
+
+	<script>
+
+
+		new Vue({
+			el: '#app',
+			data: {
+				info: null,
+				system: null,
+				python: null,
+				ezybaasInfo: {
+					name: null,
+					author: null,
+					version: null,
+					releasenotes: null,
+					releasedate: null,
+					standalone: null,
+					license: null,
+				},
+			},
+			methods: {
+				init() {
+					var self = this;
+					var root = window.location.href;
+					root = root.replace('/sysinfo/', "");
+					var axiosInst = axios.create({
+						baseURL: root
+					})
+					axiosInst.get('api/ezybaas/sysinfo/', )
+						.then(function (response) {
+							self.system = response.data.system;
+							self.python = response.data.python;
+							self.getEzybaasInfo();
+							console.log(self.system);
+							console.log(self.python);
+						}),
+						error => {
+							console.error(error);
+							document.getElementById("err_div").style.display = 'block';
+							document.getElementById("err_div").innerHTML = error;
+							$("#err_div").show().delay(900).fadeOut();
+						};
+				},
+
+				getEzybaasInfo() {
+					var self = this;
+
+					var root = window.location.href;
+					root = root.replace('/sysinfo/', "");
+					var axiosInst = axios.create({
+						baseURL: root
+					})
+					
+					axiosInst.get('api/ezybaas/version/')
+						.then(function (response) {
+							self.ezybaasInfo = response.data;
+							console.log(response.data);
+						}),
+						error => {
+							console.error(error);
+							document.getElementById("err_div").style.display = 'block';
+							document.getElementById("err_div").innerHTML = error;
+							$("#err_div").show().delay(900).fadeOut();
+						};
+				}
+
+			},
+			delimiters: ['{[{', '}]}'],
+			mounted() {
+				this.init();
+			}
+
+		})
+	</script>
+
+	{% endblock footscripts %}

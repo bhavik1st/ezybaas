@@ -1,0 +1,540 @@
+- model: ezybaas.dbsettings
+  pk: default
+  fields:
+    type: SQLITE
+    name: ezybaas.db
+    user: null
+    password: null
+    host: null
+    port: null
+    atomic: false
+    commit: true
+    created: 2019-09-10 05:18:14.497000+00:00
+    modified: 2019-09-10 05:18:14.497000+00:00
+- model: ezybaas.app
+  pk: apitest1
+  fields:
+    description: apitest first app
+    auth: BASIC
+    created: 2019-09-13 06:58:49.858000+00:00
+    modified: 2019-09-13 08:12:41.659000+00:00
+    api: true
+    active: false
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: apitest2
+  fields:
+    description: apitest second app
+    auth: NONE
+    created: 2019-09-13 11:35:44.444000+00:00
+    modified: 2019-09-13 11:35:44.444000+00:00
+    api: false
+    active: false
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: apitest3
+  fields:
+    description: apitest third app
+    auth: TOKEN
+    created: 2019-09-13 11:46:16.573000+00:00
+    modified: 2019-09-13 11:46:16.573000+00:00
+    api: true
+    active: false
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: apitest4
+  fields:
+    description: apitest first app
+    auth: BASIC
+    created: 2019-09-19 10:44:46.829000+00:00
+    modified: 2019-09-19 10:44:46.829000+00:00
+    api: true
+    active: false
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: apitest5
+  fields:
+    description: apitest first app
+    auth: BASIC
+    created: 2019-09-19 10:43:32.829000+00:00
+    modified: 2019-09-19 10:43:32.829000+00:00
+    api: true
+    active: false
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: app_basicauth
+  fields:
+    description: app for checking basic authentication
+    auth: BASIC
+    created: 2019-09-11 13:36:47.310000+00:00
+    modified: 2019-09-11 13:36:47.310000+00:00
+    api: true
+    active: true
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: app_sessionauth
+  fields:
+    description: app for session api
+    auth: SESSION
+    created: 2019-09-12 05:38:10.541000+00:00
+    modified: 2019-09-12 05:51:27.121000+00:00
+    api: true
+    active: true
+    dirty: true
+    version: 1
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: app_tokenapp
+  fields:
+    description: app for checking token authentication
+    auth: TOKEN
+    created: 2019-09-12 06:54:50.172000+00:00
+    modified: 2019-09-12 06:54:50.172000+00:00
+    api: true
+    active: true
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: testapp1
+  fields:
+    description: testapp
+    auth: SESSION
+    created: 2019-08-08 06:52:24.739000+00:00
+    modified: 2019-08-08 06:52:24.739000+00:00
+    api: true
+    active: true
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: testing
+  fields:
+    description: dsf bfgvsd
+    auth: NONE
+    created: 2019-09-25 08:50:15.155000+00:00
+    modified: 2019-09-25 08:50:15.155000+00:00
+    api: true
+    active: true
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.app
+  pk: todos
+  fields:
+    description: todos app for no authentication
+    auth: NONE
+    created: 2019-09-11 12:58:34.111000+00:00
+    modified: 2019-09-11 12:58:34.111000+00:00
+    api: true
+    active: true
+    dirty: true
+    version: 0
+    auditlog: false
+    graphql: false
+- model: ezybaas.table
+  pk: app_basicauthtodo
+  fields:
+    name: todo
+    api: true
+    owneraccess: false
+    created: 2019-09-11 13:36:47.415000+00:00
+    modified: 2019-09-11 13:36:47.415000+00:00
+    app: app_basicauth
+    pagination: false
+- model: ezybaas.table
+  pk: app_sessionauthTodo
+  fields:
+    name: Todo
+    api: true
+    owneraccess: false
+    created: 2019-09-12 05:38:10.832000+00:00
+    modified: 2019-09-12 05:38:10.832000+00:00
+    app: app_sessionauth
+    pagination: false
+- model: ezybaas.table
+  pk: app_tokenapptodo
+  fields:
+    name: todo
+    api: true
+    owneraccess: false
+    created: 2019-09-12 06:54:50.327000+00:00
+    modified: 2019-09-12 06:54:50.327000+00:00
+    app: app_tokenapp
+    pagination: false
+- model: ezybaas.table
+  pk: id
+  fields:
+    name: todo
+    api: true
+    owneraccess: false
+    created: 2019-09-13 07:00:31.200000+00:00
+    modified: 2019-09-13 07:00:31.200000+00:00
+    app: apitest1
+    pagination: false
+- model: ezybaas.table
+  pk: sr.todo
+  fields:
+    name: todo
+    api: true
+    owneraccess: false
+    created: 2019-09-13 07:03:51.249000+00:00
+    modified: 2019-09-13 07:03:51.249000+00:00
+    app: apitest1
+    pagination: false
+- model: ezybaas.table
+  pk: sr.todo1
+  fields:
+    name: todo2
+    api: true
+    owneraccess: false
+    created: 2019-09-13 11:37:12.937000+00:00
+    modified: 2019-09-13 11:37:12.937000+00:00
+    app: apitest1
+    pagination: false
+- model: ezybaas.table
+  pk: testapp1Cats
+  fields:
+    name: Cats
+    api: true
+    owneraccess: false
+    created: 2019-08-08 06:52:24.936000+00:00
+    modified: 2019-08-08 06:52:24.936000+00:00
+    app: testapp1
+    pagination: false
+- model: ezybaas.table
+  pk: testingtesting
+  fields:
+    name: testing
+    api: true
+    owneraccess: false
+    created: 2019-09-25 08:50:15.704000+00:00
+    modified: 2019-09-25 08:50:15.705000+00:00
+    app: testing
+    pagination: false
+- model: ezybaas.table
+  pk: todostodos
+  fields:
+    name: todos
+    api: true
+    owneraccess: false
+    created: 2019-09-11 12:58:34.403000+00:00
+    modified: 2019-09-11 12:58:34.403000+00:00
+    app: todos
+    pagination: false
+- model: ezybaas.metamodel
+  pk: 1
+  fields:
+    app: apitest1
+    table: Todo
+    tablekey: id
+    name: Todo
+    type: CharField
+    'null': true
+    blank: false
+    default: ''
+    min: null
+    max: null
+    unique: false
+    primarykey: false
+    foreignkeytable: ''
+    ondelete: ''
+    inapi: false
+    version: null
+    created: 2019-09-13 07:05:31.162000+00:00
+    modified: 2019-09-13 07:05:31.162000+00:00
+- model: ezybaas.metamodel
+  pk: 55
+  fields:
+    app: testapp1
+    table: Cats
+    tablekey: testapp1Cats
+    name: name
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-08-08 06:52:25.185000+00:00
+    modified: 2019-08-08 06:52:25.185000+00:00
+- model: ezybaas.metamodel
+  pk: 56
+  fields:
+    app: testapp1
+    table: Cats
+    tablekey: testapp1Cats
+    name: breed
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-08-08 06:52:25.190000+00:00
+    modified: 2019-08-08 06:52:25.191000+00:00
+- model: ezybaas.metamodel
+  pk: 58
+  fields:
+    app: todos
+    table: todos
+    tablekey: todostodos
+    name: completed
+    type: BooleanField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-11 12:58:34.545000+00:00
+    modified: 2019-09-11 12:58:34.545000+00:00
+- model: ezybaas.metamodel
+  pk: 59
+  fields:
+    app: todos
+    table: todos
+    tablekey: todostodos
+    name: description
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-11 12:58:34.549000+00:00
+    modified: 2019-09-11 12:58:34.549000+00:00
+- model: ezybaas.metamodel
+  pk: 60
+  fields:
+    app: todos
+    table: todos
+    tablekey: todostodos
+    name: title
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-11 12:58:34.637000+00:00
+    modified: 2019-09-11 12:58:34.637000+00:00
+- model: ezybaas.metamodel
+  pk: 61
+  fields:
+    app: app_basicauth
+    table: todo
+    tablekey: app_basicauthtodo
+    name: description
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-11 13:36:47.563000+00:00
+    modified: 2019-09-11 13:36:47.563000+00:00
+- model: ezybaas.metamodel
+  pk: 62
+  fields:
+    app: app_basicauth
+    table: todo
+    tablekey: app_basicauthtodo
+    name: title
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-11 13:36:47.650000+00:00
+    modified: 2019-09-11 13:36:47.650000+00:00
+- model: ezybaas.metamodel
+  pk: 63
+  fields:
+    app: app_sessionauth
+    table: Todo
+    tablekey: app_sessionauthTodo
+    name: Description
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-12 05:38:10.959000+00:00
+    modified: 2019-09-12 05:38:10.959000+00:00
+- model: ezybaas.metamodel
+  pk: 64
+  fields:
+    app: app_sessionauth
+    table: Todo
+    tablekey: app_sessionauthTodo
+    name: Id
+    type: IntegerField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: true
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-12 05:38:10.963000+00:00
+    modified: 2019-09-12 05:38:10.963000+00:00
+- model: ezybaas.metamodel
+  pk: 65
+  fields:
+    app: app_sessionauth
+    table: Todo
+    tablekey: app_sessionauthTodo
+    name: Serial_no
+    type: IntegerField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: true
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-12 05:38:11.023000+00:00
+    modified: 2019-09-12 05:38:11.024000+00:00
+- model: ezybaas.metamodel
+  pk: 66
+  fields:
+    app: app_tokenapp
+    table: todo
+    tablekey: app_tokenapptodo
+    name: description
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-12 06:54:50.438000+00:00
+    modified: 2019-09-12 06:54:50.438000+00:00
+- model: ezybaas.metamodel
+  pk: 67
+  fields:
+    app: app_tokenapp
+    table: todo
+    tablekey: app_tokenapptodo
+    name: title
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-12 06:54:50.441000+00:00
+    modified: 2019-09-12 06:54:50.441000+00:00
+- model: ezybaas.metamodel
+  pk: 68
+  fields:
+    app: testing
+    table: testing
+    tablekey: testingtesting
+    name: name
+    type: CharField
+    'null': true
+    blank: true
+    default: null
+    min: 0
+    max: 255
+    unique: false
+    primarykey: false
+    foreignkeytable: null
+    ondelete: No Foreign Key
+    inapi: true
+    version: 0
+    created: 2019-09-25 08:50:15.862000+00:00
+    modified: 2019-09-25 08:50:15.862000+00:00

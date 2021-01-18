@@ -1,0 +1,490 @@
+{% extends "ezybaas/layout.html" %}
+
+
+
+{% block topgradient %}
+
+
+<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+
+    {% if  app_set.count == 0 %}
+    <div class="container">
+      <div class="alert alert-warning" role="alert">
+        <strong>Warning!</strong> You have no Apps! <a href="{% url 'wizard' %}">Add an App now!</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if messages %}
+
+    {% for message in messages %}
+    <div class="alert 
+            {% if message.tags == 'info' %}
+                alert-success
+            {% else %}
+                alert-danger
+            {% endif %}
+            alert-dismissible fade show" role="alert">
+      <span class="alert-inner--icon"><i class="fa fa-info-circle"></i>&nbsp; &nbsp;</span>
+      <span class="alert-inner--text">{{ message }}</span>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+
+    {% endif %}
+    <br><br>
+    <div class="header-body">
+      <div class="row">
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">Databases</h5>
+                  <span class="h2 font-weight-bold mb-0">1</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-primary text-white rounded-circle shadow">
+                    <i class="text-white fas fa-database"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-muted text-sm">
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">Apps</h5>
+                  <span class="h2 font-weight-bold mb-0">{{ app_count }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-primary text-white rounded-circle shadow">
+                    <i class="ni ni-app"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-muted text-sm">
+
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">Tables</h5>
+                  <span class="h2 font-weight-bold mb-0">{{ table_count }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-primary text-white rounded-circle shadow">
+                    <i class="fas fa-table"></i>
+                  </div>
+                </div>
+              </div>
+
+              <p class="mt-3 mb-0 text-muted text-sm">
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+          <div class="card card-stats mb-4 mb-xl-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">APIs</h5>
+                  <span class="h2 font-weight-bold mb-0">{{ table_count }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-primary text-white rounded-circle shadow">
+                    <i class="fas fa-file"></i>
+                  </div>
+                </div>
+              </div>
+
+              <p class="mt-3 mb-0 text-muted text-sm">
+
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock topgradient %}
+
+{% block bodycontent %}
+
+<!-- Gives Preset to the Table, such that it does not start after the Blue Graient Finishes-->
+<div class="container-fluid mt--7">
+  <div class="row">
+    <div class="col-xl-12 mb-5 mb-xl-0">
+      <div class="card shadow">
+        <div class="card-header border-0">
+
+          <div style="float: right;">
+            <a href="{% url 'wizard' %}">
+              <button class="btn btn-icon btn-3 btn-primary" type="button">
+                <span class="btn-inner--icon"><i class="fas fa-plus"></i></span>
+                <span class="d-none d-md-inline btn-inner--text">Add App</span>
+              </button>
+            </a>
+          </div>
+          <h3 class="mb-0"><i class="ni ni-app"></i>&nbsp;Apps</h3>
+          <div class="alert alert-success" role="alert" id="success_div" style="display:none;width=50%;">
+            <strong>Success</strong> {{ app.name }} app deleted successfully.!
+          </div>
+          <div class="alert alert-warning" role="alert" id="error_div" style="display:none;width=50%;">
+            <strong>Error</strong> Sorry! Something went wrong.!
+          </div>
+
+          <div class="alert alert-success" role="alert" id="success_div_for_api" style="display:none;width=50%;">
+            <strong>Success</strong> {{ app.name }} api added successfully.!
+          </div>
+          <div class="alert alert-warning" role="alert" id="error_div_for_api" style="display:none;width=50%;">
+            <strong>Error</strong> Sorry! Something went wrong.!
+          </div>
+
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col"><i class="ni ni-app"></i>&nbsp;App</th>
+                <th scope="col"><i class="fas fa-code-branch"></i>&nbsp;Version</th>
+                <th scope="col"><i class="fas fa-bolt"></i>&nbsp;API</th>
+                <th scope="col"><i class="fas fa-user-shield"></i>&nbsp;Auth</th>
+                <th scope="col"><i class="fas fa-traffic-light"></i>&nbsp;Status</th>
+                <th scope="col"><i class="fas fa-wrench"></i>&nbsp;Action</th>
+              </tr>
+            </thead>
+            {% if app_count > 0 %}
+            <tbody>
+              {% for app in app_data %}
+              <tr>
+                <th scope="row">
+                  <div class="media align-items-center">
+                    <a href="#" class="rounded-circle mr-3">
+                      <i class="ni ni-app"></i>
+                    </a>
+                    <div class="media-body">
+                      {% comment %} {% if app.tables %}
+                      <!--index page will fail if app has 0 tables -->
+                      <a href="{% url 'database' %}?app={{app.name}}&table={{ app.tables }}">
+                        <span class="mb-0 text-sm">{{ app.name }}</span>
+                      </a>
+                      {% else %} {% endcomment %}
+                      <a href="{% url 'swagger' %}" target="_blank">
+                        <span class="mb-0 text-sm">{{ app.name }}</span>
+                      </a>
+                      {% comment %} {% endif %} {% endcomment %}
+                    </div>
+                  </div>
+                </th>
+
+                <td>
+                  {% firstof  app.version  "0" %}
+                </td>
+                <td>
+
+                  <a class="btn btn-sm btn-icon-only text-light" href="{% url 'swagger' %}" role="button"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-link text-success"></i>
+                  </a>
+
+
+                </td>
+
+                <td>
+                  {% firstof app.authentication  'None' %}
+                </td>
+
+                <td>
+                  {% if app.status == False %}
+                  <button class="btn btn-sm btn-icon-only text-light" onclick="migrateApp('{{app.name}}');"
+                    style="background-color: transparent;" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-toggle-off text-danger"></i>
+                  </button>
+
+                  {% else %}
+                  <button class="btn btn-sm btn-icon-only text-light" onclick="migrateApp('{{app.name}}');"
+                    style="background-color: transparent;" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-toggle-on text-success"></i>
+                  </button>
+
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if app.tables %}
+                  <a class="btn btn-sm btn-icon-only text-light" href="{% url 'editwizard' %}?app={{app.name}}"
+                  role="button" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-edit text-primary"></i>
+                </a>
+                {% else %}
+                <a class="btn btn-sm btn-icon-only text-light" href="{% url 'editwizard' %}?app={{app.name}}"
+                  role="button" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-edit text-primary"></i>
+                </a>
+
+
+                  {% endif %}
+
+                  <button class="btn btn-sm btn-icon-only text-light" onclick="handleDelete('{{app.name}}');"
+                    style="background-color: transparent;" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-trash text-primary"></i>
+                  </button>
+                  <input id="apname" hidden>
+                </td>
+
+              </tr>
+              {% endfor %}
+            </tbody>
+            {% else %}
+            <tbody>
+              <tr>
+                <th scope="row"></th>
+                <td scope="row"></td>
+                <td scope="row"></td>
+                <td scope="row">
+
+                  ** No Apps Found **
+
+                </td>
+                <td scope="row"></td>
+                <td scope="row"></td>
+              </tr>
+            </tbody>
+            {% endif %}
+          </table>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel"><i class="fa fa-times-circle" style="color:red"></i>&nbsp;Delete
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body bg-secondary">
+        <div class="row">
+          <div class="col">
+            Do you want to delete this app?
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn btn-gradient-secondary" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" id="deleteApp">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="changeStatus" tabindex="-1" role="dialog" aria-labelledby="changeStatusLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changeStatusLabel"><i class="fas fa-check-circle"></i>&nbsp;Make api of this app
+          live
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body bg-secondary">
+        <div class="row">
+          <div class="col">
+            Do you want to make api of this app live?
+            <input type="text" id="hiddenAppname" hidden>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a><button type="button" class="btn btn btn-gradient-secondary" data-dismiss="modal">No</button></a>
+
+        <button id="apiLive" class="btn btn-primary"> Yes</button>
+
+        {% comment %} <a href="#"><button type="button" id="apiLive" class="btn btn btn-primary"> Yes </button></a>
+        {% endcomment %}
+
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock bodycontent %}
+
+{% block footscripts %}
+{{ block.super }}
+<script>
+
+  function handleDelete(appname) {
+    document.getElementById('apname').value = appname;
+    console.log(document.getElementById('apname').value);
+    $('#deleteModal').modal('show');
+  }
+
+  // function makeApiLive(appname) {
+  //   document.getElementById('hiddenAppname').value = appname;
+  //   // $('#changeStatus').modal('show');
+
+  // }
+
+  function migrateApp(appname) {
+    document.getElementById('hiddenAppname').value = appname;
+    $('#changeStatus').modal('show');
+
+    var selectedApp = document.getElementById('hiddenAppname').value;
+
+    var root = window.location.href;
+    root = root.replace('/home/', "");
+    var axiosInst = axios.create({
+      baseURL: root
+    })
+
+
+    axiosInst.post('api/ezybaas/migrateApp/', {
+      "app": selectedApp
+    })
+
+      .then(function (response) {
+        console.log(response);
+        window.location.reload(true);
+
+      })
+      .catch(function (error) {
+        document.getElementById("error_div_for_api").style.display = 'block';
+        document.getElementById("error_div_for_api").innerHTML = error;
+        $("#error_div_for_api").show().delay(900).fadeOut();
+        console.log(error);
+      });
+
+  }
+
+
+  
+
+  $("#deleteApp").click(function () {
+    $('#deleteModal').modal('hide');
+    var selectedApp = document.getElementById('apname').value;
+    var root = window.location.href;
+    root = root.replace('/home/', "");
+    var axiosInst = axios.create({
+      baseURL: root
+    })
+
+    axiosInst.get('api/ezybaas/delete/' + selectedApp)
+      .then(function (response) {
+        $("#success_div").show().delay(900).fadeOut();
+        location.reload();
+        console.log(response);
+      })
+      .catch(function (error) {
+        document.getElementById("error_div").style.display = 'block';
+        document.getElementById("error_div").innerHTML = error;
+        $("#error_div").show().delay(900).fadeOut();
+        console.log(error);
+      });
+
+  });
+
+  $("#apiLive").click(function () {
+    // $('#changeStatus').modal('hide');
+    var selectedApp = document.getElementById('hiddenAppname').value;
+
+    var root = window.location.href;
+    root = root.replace('/home/', "");
+    var axiosInst = axios.create({
+      baseURL: root
+    })
+
+
+    axiosInst.post('api/ezybaas/golive/', {
+      "app": selectedApp
+    })
+
+      .then(function (response) {
+        // window.location.reload(true);
+        $("#success_div_for_api").show().delay(900).fadeOut();
+        console.log(response);
+
+      })
+      .catch(function (error) {
+        document.getElementById("error_div_for_api").style.display = 'block';
+        document.getElementById("error_div_for_api").innerHTML = error;
+        $("#error_div_for_api").show().delay(900).fadeOut();
+        console.log(error);
+      });
+
+  });
+
+
+  $("#mybtn1").click(function () {
+    var appName = $("#AppName").val();
+    // alert('App called' + appName);
+    // TODO: Handle for /ezybaas/api/apps
+    $.post("/api/apps/",
+      {
+        name: appName
+        // auth_type: appAuth,
+        // description: appDescription,
+      },
+      function (data, status) {
+        alert('call returned');
+        alert("Name: " + name + "\nStatus: " + status);
+        // $("#success-msg").val = data;
+        // $("#alert-success").show();
+        // $("#form1")[0].reset();
+        // location.reload();
+      });
+
+    // var saveData = $.ajax({
+    //       type: 'POST',
+    //       url: "/api/apps/",
+    //       data: { name: appName },
+    //       dataType: "application/json",
+    //       success: function(resultData) { alert("Save Complete") }
+    // });
+    // saveData.error(function() { alert("Something went wrong"); });
+  });
+
+  $("#deleteAppID").click(function () {
+    var appName = $("#AppName").val();
+    // TODO: Handle for /ezybaas/api/apps
+    $.delete("/api/apps/testapp1",
+      // {
+      //   name: appName
+      //   // auth_type: appAuth,
+      //   // description: appDescription,
+      // },
+      // function (data, status) {
+      //   alert("Name: " + name + "\nStatus: " + status);
+      //   $("#form1")[0].reset();
+      // }
+    );
+  });
+
+</script>
+{% endblock footscripts %}

@@ -1,0 +1,13 @@
+/__pycache__/*
+*.pyc
+venv/
+env/
+.vscode/
+.idea/
+dist/
+django_ezybaas.egg-info/
+build/
+db.sqlite
+django-ezybaas-*/
+node_modules/
+
