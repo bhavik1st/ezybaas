@@ -1,10 +1,11 @@
 # Step 1 - Install npm packages
 # Needs node and npm to be pre-installed
-cd core/ezybaas/static
+cd ezybaas/static
 npm install
 
 # Step 2 - Setup Django Dependencies
 # Needs pip and virtualenv to be pre-installed.
+cd ..
 cd ..
 if [! -d "$DIR" ]; then
     virtualenv venv
