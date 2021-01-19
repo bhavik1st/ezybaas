@@ -16,79 +16,55 @@ Take your idea to API in minutes.
 * Flexible & Customizable 
 * GraphQL APIs (Coming Soon)
 
-## Getting Started 
-* You can use ezybaas as standalone microservice/service.
+You can use / deploy 
+* As standalone microservice/service with APIs driven by a SQL Database.
 * You can also use ezybaas as a plugin to your Django project.
 
 ## Getting Started
-Ensure you have python3, virtualenv and npm installed and in your path
+
+### Prerequisities
+Ensure you have following installed and in your path
+* python3
+* virtualenv
+* npm 
+
+### Step 1: Setup and launch Server
+Checkout the git repo https://github.com/bhavik1st/ezybaas 
 Run following script to launch ezybaas with demo application on http://127.0.0.1:8000 (http:localhost:8000)
-For Linux/Mac OS
+
+#### For Linux/Mac OS
 ```
 $./run.sh
 ```
-For Window OS
+
+#### For Window OS
 ```
-# On Linux/Mac
 C:\ezybaas\run.bat
 ```
 
+### Step 2: Login to EzyBaaS
 Login to http://127.0.0.1:8000/ezybaas
 User: 	  admin
 Password: admin
 
+#### Home Screen
+![EzyBaaS Home Screen](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/Home.png?raw=true)
 
-### Steps
-1. pip install django-ezybaas
+### Step 3: Create/Edit App
+#### Provide APP details
+![EzyBaaS Create App](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/CreateApp.png?raw=true)
 
-#### Prerequisites
-	Ensure you have a working django project. 
-	If you do not have django project follow the steps at https://docs.djangoproject.com/en/3.1/intro/tutorial01/
-	ezybaas has not yet been tested with Django version >=3.0 but should ideally work fine with it. 
+#### Provide APP Schema
+![EzyBaaS Create Schema](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/CreateApp.png?raw=true)
 
-2. Add ezybaas to your INSTALLED_APPS in your settings.py file like this:
-```
-    INSTALLED_APPS = [
-        ...	
-        'ezybaas',
-        'rest_framework',
-        'rest_framework_swagger',
-        ]
-```
-3. Include the ezybaas URLconf in your project urls.py like this:
-```
-    from django.urls import path,include
-```
-```
-	path('ezybaas/', include('ezybaas.urls')),
-```
-4. Add these lines at the end of Settings.py
+#### Publish APP APIs
+![EzyBaaS Publish App](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/GoLive.png?raw=true)
 
-```
-	LOGIN_URL = 'login/'
-```
-```
-	from ezybaas.db import *
-	DATABASES['ezybaas']=EZYBAAS_DATABASES['ezybaas']
-	DATABASE_ROUTERS = ['ezybaas.db.EzyBaasDbRouter']
-```
-
-5. Run `python manage.py migrate` to create the ezybaas models.
-
-6. Run `python manage.py loaddata --database your_venv_path/Lib/site-packages/ezybaas/static/db.json`
-<!-- 4. Run `python manage.py loaddata --database ezybaas ezybaas/db.json` -->
-
-7. Run `python manage.py migrate --run-syncdb --database ezybaas`
-
-8. Create superuser 
-
-9. Start the development server and visit [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) (you'll need the Admin app enabled).
-
-10. Visit [http://127.0.0.1:8000/ezybaas/](http://127.0.0.1:8000/ezybaas/).
-
+### Step 3: Checkout generated APIs on swagger
+Swagger API Docs http://127.0.0.1:8000/ezybaas/apidocs
+![EzyBaaS Publish App](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/Swagger.png?raw=true)
 
 ## Authors
-
 * **Bhavik Shah** - Founder & CTO of *Susthitsoft Technologies Private Limited*
 
 ## License
