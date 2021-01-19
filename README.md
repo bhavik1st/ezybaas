@@ -5,7 +5,9 @@
 [![djangorestframework>= 3.9.4](https://img.shields.io/badge/djangorestframework-3.9.4-blue.svg)](https://www.django-rest-framework.org/)
 [![django-rest-swagger>=2.2.0](https://img.shields.io/badge/djangorestswagger-2.2.0-blue.svg)](https://django-rest-swagger.readthedocs.io/en/latest/)
 
-## EzyBaaS - Easiest Backend as a Service.
+![EzyBaaS Logo](https://github.com/bhavik1st/ezybaas/blob/master/core/ezybaas/static/img/brand/logop.png?raw=true)
+
+# EzyBaaS - Easiest Backend as a Service.
 
 Take your idea to API in minutes.
 * No Coding required. 
@@ -16,7 +18,25 @@ Take your idea to API in minutes.
 
 ## Getting Started 
 * You can use ezybaas as standalone microservice/service.
-* You can also use ezybaas as a django plugin in your project.
+* You can also use ezybaas as a plugin to your Django project.
+
+## Getting Started
+Ensure you have python3, virtualenv and npm installed and in your path
+Run following script to launch ezybaas with demo application on http://127.0.0.1:8000 (http:localhost:8000)
+For Linux/Mac OS
+```
+$./run.sh
+```
+For Window OS
+```
+# On Linux/Mac
+C:\ezybaas\run.bat
+```
+
+Login to http://127.0.0.1:8000/ezybaas
+User: 	  admin
+Password: admin
+
 
 ### Steps
 1. pip install django-ezybaas
