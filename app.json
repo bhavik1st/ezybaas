@@ -1,0 +1,8 @@
+{
+    "name": "EzyBaaS",
+    "description": "DB 2 API in minutes!",
+    "repository": "https://github.com/bhavik1st/ezybaas",
+    "logo": "https://raw.githubusercontent.com/bhavik1st/ezybaas/master/docs/images/brand/logo.png",
+    "keywords": ["node", "express", "static"]
+  }
+  

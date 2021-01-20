@@ -29,7 +29,7 @@ Ensure you have following installed and in your path
 * npm 
 
 ### Step 1: Setup and launch Server
-Checkout the git repo https://github.com/bhavik1st/ezybaas 
+Checkout and 
 Run following script to launch ezybaas with demo application on http://127.0.0.1:8000 (http:localhost:8000)
 
 #### For Linux/Mac OS
