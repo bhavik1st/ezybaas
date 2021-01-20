@@ -5,7 +5,7 @@
 [![djangorestframework>= 3.9.4](https://img.shields.io/badge/djangorestframework-3.9.4-blue.svg)](https://www.django-rest-framework.org/)
 [![django-rest-swagger>=2.2.0](https://img.shields.io/badge/djangorestswagger-2.2.0-blue.svg)](https://django-rest-swagger.readthedocs.io/en/latest/)
 
-![EzyBaaS Logo](https://github.com/bhavik1st/ezybaas/blob/master/core/ezybaas/static/img/brand/logop.png?raw=true)
+![EzyBaaS Logo](https://github.com/bhavik1st/ezybaas/blob/master/core/ezybaas/docs/images/brand/logo.png?raw=true)
 
 # EzyBaaS - Easiest Backend as a Service.
 
