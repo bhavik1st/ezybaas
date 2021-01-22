@@ -21,6 +21,11 @@ You can use / deploy
 * You can also use ezybaas as a plugin to your Django project.
 
 ## Getting Started
+You can deploy EzyBaaS on anything which can run python.
+* Self Host on your own Server/Cloud/VPC
+* Heroku like PaaS
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bhavik1st/ezybaas/master/code)
+* Docker / Docker-Compose 
 
 ### Prerequisities
 Ensure you have following installed and in your path
