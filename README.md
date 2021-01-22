@@ -24,7 +24,7 @@ You can use / deploy
 You can deploy EzyBaaS on anything which can run python.
 * Self Host on your own Server/Cloud/VPC
 * Heroku like PaaS
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bhavik1st/ezybaas/master/code)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/bhavik1st/ezybaas/master/core)
 * Docker / Docker-Compose 
 
 ### Prerequisities
