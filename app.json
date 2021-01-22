@@ -21,7 +21,7 @@
       }
     },
     "scripts": {
-      "postdeploy": "./core/setup.sh"
+      "postdeploy": "cd core && ./setup.sh"
     },
     "addons": [
       {
@@ -30,9 +30,6 @@
       }
     ],
     "buildpacks": [
-      {
-        "url": "heroku/nodejs"
-      },
       {
         "url": "heroku/python"
       }
