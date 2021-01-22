@@ -20,4 +20,4 @@ python manage.py migrate
 
 # Step 4 - Create superuser for login to ezybaas
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('admin', 'admin@ezybaas.com', 'admin')" | python manage.py shell
-#python manage.py createsuperuser --noinput --username admin --email admin@ezybaas.com
+# python manage.py createsuperuser --noinput --username admin --email admin@ezybaas.com

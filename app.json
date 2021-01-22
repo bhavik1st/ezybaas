@@ -26,9 +26,6 @@
     "addons": [
       {
         "plan": "heroku-postgresql:hobby-dev",
-        "options": {
-          "version": "9.5"
-        },
         "as": "DATABASE"
       }
     ],
