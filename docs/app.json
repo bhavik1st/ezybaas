@@ -17,11 +17,11 @@
     "env": {
       "DJANGO_SETTINGS_MODULE": {
         "description": "Set Django Settings for Heroku",
-        "value": "ezybaasmain.settings"
+        "value": "core.ezybaasmain.settings"
       }
     },
     "scripts": {
-      "postdeploy": "./setup.sh"
+      "postdeploy": "./core/setup.sh"
     },
     "addons": [
       {
