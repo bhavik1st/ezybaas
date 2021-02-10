@@ -60,7 +60,7 @@ Password: admin
 ![EzyBaaS Create App](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/CreateApp.png?raw=true)
 
 #### Provide APP Schema
-![EzyBaaS Create Schema](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/CreateApp.png?raw=true)
+![EzyBaaS Create Schema](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/CreateSchema.png?raw=true)
 
 #### Publish APP APIs
 ![EzyBaaS Publish App](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/GoLive.png?raw=true)
