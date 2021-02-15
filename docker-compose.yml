@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+
+  ezybaas:
+    image: ezybaas/ezybaas:latest
+    volumes:
+      - ./core/:/usr/src/app
+    ports:
+      - 8000:8000
