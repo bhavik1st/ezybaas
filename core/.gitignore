@@ -10,4 +10,5 @@ build/
 db.sqlite
 django-ezybaas-*/
 node_modules/
+staticfiles/
 

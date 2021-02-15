@@ -1,1 +1,3 @@
-docker build . -t ezybaas:0.0.1
+docker build . -t ezybaas/ezybaas:latest
+#docker tag ezybaas:latest ezybaas/ezybaas:latest
+#docker push ezybaas/ezybaas:latest

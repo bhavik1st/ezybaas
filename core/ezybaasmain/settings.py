@@ -11,35 +11,35 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
-from ezybaas.appconfig import apps
-
+import environ
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+env = environ.Env(DEBUG=(bool, False))
+env_file = os.path.join(BASE_DIR, ".env")
+environ.Env.read_env(env_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'xe*ndcprlhfn@y=t-(j1vk65r)uwhk97$h*_cyzxlqx+=g-t&y'
+SECRET_KEY = env.str('SECRET_KEY', default='xe*ndcprlhfn@y=t-(j1vk65r)uwhk97$h*_cyzxlqx+=g-t&y')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=('*','123'))
 
-# DEFAULT_RENDERER_CLASSES = (
-#     'rest_framework.renderers.JSONRenderer',
-# )
-
-# if DEBUG:
-#     DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
-#         'rest_framework.renderers.BrowsableAPIRenderer',
-#     )
+print('DEBUG='+str(DEBUG))
+if DEBUG:
+	#print('SECRET_KEY='+str(SECRET_KEY))
+	print('SECRET_KEY='+str(SECRET_KEY))
+	print('ALLOWED_HOSTS='+str(ALLOWED_HOSTS))
 
 
+# This is DRF Rendering of the APIs
 # This is not required as we used view based definition for each app
 # ASPER - https://stackoverflow.com/questions/11898065/how-to-disable-admin-style-browsable-interface-of-django-rest-framework
 # REST_FRAMEWORK = {
@@ -47,7 +47,6 @@ ALLOWED_HOSTS = []
 #         'rest_framework.authentication.SessionAuthentication',
 #         'rest_framework.authentication.TokenAuthentication',
 #         'rest_framework.authentication.BasicAuthentication',
-
 #     ),
 #     'DEFAULT_PERMISSION_CLASSES': (
 #         'rest_framework.permissions.IsAuthenticated',
@@ -57,9 +56,10 @@ ALLOWED_HOSTS = []
 #     )
 # }
 
+# 'rest_framework.renderers.BrowsableAPIRenderer'
+
 # Application definition
 INSTALLED_APPS = [
-
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -71,7 +71,6 @@ INSTALLED_APPS = [
 	'rest_framework_swagger',
 	'ezybaas',
 	]
-
 
 
 SWAGGER_SETTINGS = {
@@ -86,6 +85,7 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'ezybaasmain.urls'
@@ -107,16 +107,7 @@ TEMPLATES = [
 				'django.contrib.messages.context_processors.messages',
 			],
 		},
-	},
-	# {
-	# 	'BACKEND': 'django.template.backends.jinja2.Jinja2',
-	# 	'DIRS': [],
-	# 	'APP_DIRS': True,
-	# 	'OPTIONS': {
-	# 		'environment': 'ezybaasmain.jinja2.environment',
-	# 		'context_processors': ['django.contrib.messages.context_processors.messages'],
-	# 	},
-	# },
+	}
 ]
 
 
@@ -125,12 +116,16 @@ WSGI_APPLICATION = 'ezybaasmain.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+EZYBAAS_DEFAULT_DB = env.str('EZYBAAS_DB', default=('sqlite:///' + os.path.join(BASE_DIR, 'ezybaas.db')))
+
+EZYBAAS_DB_CONN_MAX_AGE = env.int('EZYBAAS_DB_CONN_MAX_AGE', default=0) 
+if EZYBAAS_DB_CONN_MAX_AGE < 0:
+	EZYBAAS_DB_CONN_MAX_AGE = None 
 
 DATABASES =  {
-	'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': os.path.join(BASE_DIR, 'ezybaas.db'),
-	}
+	'default': dj_database_url.config(	env = EZYBAAS_DEFAULT_DB,
+                                    	default = EZYBAAS_DEFAULT_DB,
+                                        conn_max_age = EZYBAAS_DB_CONN_MAX_AGE)
 }
 
 
@@ -171,7 +166,11 @@ LOGIN_URL = 'login/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+#STATICFILES_DIRS = (
+#    os.path.join(BASE_DIR, 'static'),
+#)
 
 # from ezybaas.db import *
 # DATABASES['ezybaas']=EZYBAAS_DATABASES['ezybaas']
