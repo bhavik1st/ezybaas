@@ -25,24 +25,21 @@ environ.Env.read_env(env_file)
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', default='xe*ndcprlhfn@y=t-(j1vk65r)uwhk97$h*_cyzxlqx+=g-t&y')
+SECRET_KEY = env.str('SECRET_KEY', default='xe*ndcprlhfn@y=t-(j1vk65r)uwhk97$h*_cyzxlqx+=g-t&y')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = env('DEBUG', default=['*'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=('*','123'))
+
+print('DEBUG='+str(DEBUG))
+if DEBUG:
+	#print('SECRET_KEY='+str(SECRET_KEY))
+	print('SECRET_KEY='+str(SECRET_KEY))
+	print('ALLOWED_HOSTS='+str(ALLOWED_HOSTS))
+
 
 # This is DRF Rendering of the APIs
-# DEFAULT_RENDERER_CLASSES = (
-#     'rest_framework.renderers.JSONRenderer',
-# )
-
-# if DEBUG:
-#     DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + (
-#         'rest_framework.renderers.BrowsableAPIRenderer',
-#     )
-
-
 # This is not required as we used view based definition for each app
 # ASPER - https://stackoverflow.com/questions/11898065/how-to-disable-admin-style-browsable-interface-of-django-rest-framework
 # REST_FRAMEWORK = {
@@ -50,7 +47,6 @@ ALLOWED_HOSTS = env('DEBUG', default=['*'])
 #         'rest_framework.authentication.SessionAuthentication',
 #         'rest_framework.authentication.TokenAuthentication',
 #         'rest_framework.authentication.BasicAuthentication',
-
 #     ),
 #     'DEFAULT_PERMISSION_CLASSES': (
 #         'rest_framework.permissions.IsAuthenticated',
@@ -59,6 +55,8 @@ ALLOWED_HOSTS = env('DEBUG', default=['*'])
 #         'rest_framework.renderers.JSONRenderer',
 #     )
 # }
+
+# 'rest_framework.renderers.BrowsableAPIRenderer'
 
 # Application definition
 INSTALLED_APPS = [
@@ -117,9 +115,9 @@ WSGI_APPLICATION = 'ezybaasmain.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-EZYBAAS_DEFAULT_DB = env('EZYBAAS_DB', default=('sqlite:///' + os.path.join(BASE_DIR, 'ezybaas.db')))
+EZYBAAS_DEFAULT_DB = env.str('EZYBAAS_DB', default=('sqlite:///' + os.path.join(BASE_DIR, 'ezybaas.db')))
 
-EZYBAAS_DB_CONN_MAX_AGE = env('EZYBAAS_DB_CONN_MAX_AGE', default=0) 
+EZYBAAS_DB_CONN_MAX_AGE = env.int('EZYBAAS_DB_CONN_MAX_AGE', default=0) 
 if EZYBAAS_DB_CONN_MAX_AGE < 0:
 	EZYBAAS_DB_CONN_MAX_AGE = None 
 
