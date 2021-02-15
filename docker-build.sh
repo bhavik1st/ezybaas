@@ -1,1 +1,1 @@
-docker build . -t ezybaas:0.1.0
+docker build . -t ezybaas
