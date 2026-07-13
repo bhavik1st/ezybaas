@@ -4,14 +4,15 @@
 [![Django>= 2.2.4](https://img.shields.io/badge/django-2.2.4-blue.svg)](https://www.djangoproject.com/download/)
 [![djangorestframework>= 3.9.4](https://img.shields.io/badge/djangorestframework-3.9.4-blue.svg)](https://www.django-rest-framework.org/)
 [![django-rest-swagger>=2.2.0](https://img.shields.io/badge/djangorestswagger-2.2.0-blue.svg)](https://django-rest-swagger.readthedocs.io/en/latest/)
-
-![EzyBaaS Logo](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/brand/logo.png?raw=true)
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/django-ezybaas)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/django-ezybaas)
 ![PyPI - Version](https://img.shields.io/pypi/v/django-ezybaas)
 ![PyPI - License](https://img.shields.io/pypi/l/django-ezybaas)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-ezybaas)
 ![GitHub repo size](https://img.shields.io/github/repo-size/bhavik1st/ezybaas)
+
+![EzyBaaS Logo](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/brand/logo.png?raw=true)
+
 
 # EzyBaaS - Easiest Backend as a Service.
 
