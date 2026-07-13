@@ -6,6 +6,12 @@
 [![django-rest-swagger>=2.2.0](https://img.shields.io/badge/djangorestswagger-2.2.0-blue.svg)](https://django-rest-swagger.readthedocs.io/en/latest/)
 
 ![EzyBaaS Logo](https://github.com/bhavik1st/ezybaas/blob/master/docs/images/brand/logo.png?raw=true)
+![PyPI - Downloads](https://img.shields.io/pypi/dw/django-ezybaas)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/django-ezybaas)
+![PyPI - Version](https://img.shields.io/pypi/v/django-ezybaas)
+![PyPI - License](https://img.shields.io/pypi/l/django-ezybaas)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-ezybaas)
+![GitHub repo size](https://img.shields.io/github/repo-size/bhavik1st/ezybaas)
 
 # EzyBaaS - Easiest Backend as a Service.
 
